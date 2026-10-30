@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' | RoomLab'">RoomLab</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}"><span class="brand-mark">RL</span><span>RoomLab</span></a>
+        <div class="nav-caption">MENU CHÍNH</div>
+        <nav class="menu">
+            <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' active' : ''">▦ Tổng quan</a>
+            <a th:href="@{/timetable}" th:classappend="${activePage == 'timetable'} ? ' active' : ''">▦ Lịch biểu tổng quan</a>
+            <a th:href="@{/bookings/new}" th:classappend="${activePage == 'booking'} ? ' active' : ''">＋ Đặt phòng máy</a>
+            <a th:href="@{/bookings/mine}" th:classappend="${activePage == 'myBookings'} ? ' active' : ''">◷ Lịch sử đặt phòng</a>
+            <div class="nav-caption admin-caption">QUẢN TRỊ</div>
+            <a th:href="@{/admin/approvals}" th:classappend="${activePage == 'approvals'} ? ' active' : ''">✓ Duyệt lịch đặt</a>
+            <a th:href="@{/admin/rooms}" th:classappend="${activePage == 'rooms'} ? ' active' : ''">▣ Phòng máy & thiết bị</a>
+            <a th:href="@{/admin/users}" th:classappend="${activePage == 'users'} ? ' active' : ''">♙ Người dùng & phân quyền</a>
+            <a th:href="@{/admin/reports}" th:classappend="${activePage == 'reports'} ? ' active' : ''">▤ Báo cáo hiệu suất</a>
+            <a th:href="@{/incidents}" th:classappend="${activePage == 'incidents'} ? ' active' : ''">⚠ Sự cố / Báo hỏng</a>
+            <div class="nav-caption admin-caption">TÀI KHOẢN</div>
+            <a th:href="@{/profile}" th:classappend="${activePage == 'profile'} ? ' active' : ''">⚙ Thông tin cá nhân</a>
+            <a th:href="@{/login}">⇥ Đăng xuất</a>
+        </nav>
+        <div class="sidebar-note">HỆ THỐNG QUẢN LÝ<br><strong>LỊCH SỬ DỤNG PHÒNG MÁY</strong></div>
+    </aside>
+
+    <main class="main-area">
+        <header class="topbar">
+            <div><span class="top-kicker">ROOM LAB MANAGER</span><strong>Hệ thống quản lý lịch sử dụng phòng máy</strong></div>
+            <div class="user-chip"><span class="avatar">U</span><span>Người dùng demo<br><small>Vai trò: Chưa đăng nhập</small></span></div>
+        </header>
+        <section class="content">
+            <div class="page-heading">
+                <div><div class="eyebrow">KHÔNG GIAN LÀM VIỆC</div><h1 th:text="${pageTitle}">Tiêu đề trang</h1>
+                    <p th:text="${pageDescription}">Mô tả trang</p></div>
+                <a class="btn btn-light" th:href="@{/dashboard}">← Về tổng quan</a>
+            </div>
+            <div class="empty-panel">
+                <div class="empty-icon">✦</div>
+                <h2>Khu vực nội dung đang được xây dựng</h2>
+                <p>Đây là giao diện khung. Bạn có thể bổ sung bảng dữ liệu, biểu mẫu và chức năng xử lý cho module này.</p>
+                <div class="quick-links">
+                    <a class="btn btn-primary" th:href="@{/timetable}">Xem lịch biểu</a>
+                    <a class="btn btn-outline" th:href="@{/bookings/new}">Tạo yêu cầu đặt phòng</a>
+                </div>
+            </div>
+        </section>
+        <footer>© 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy</footer>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | RoomLab</title><link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-body">
+<div class="login-card">
+    <a class="brand login-brand" th:href="@{/dashboard}"><span class="brand-mark">RL</span><span>RoomLab</span></a>
+    <div class="eyebrow">HỆ THỐNG QUẢN LÝ PHÒNG MÁY</div>
+    <h1>Chào mừng trở lại</h1><p class="muted">Đăng nhập để tiếp tục sử dụng hệ thống.</p>
+    <form action="/dashboard" method="get">
+        <label>Email hoặc mã người dùng</label><input type="text" placeholder="Nhập email / mã người dùng">
+        <label>Mật khẩu</label><input type="password" placeholder="Nhập mật khẩu">
+        <div class="login-options"><label class="remember"><input type="checkbox"> Ghi nhớ đăng nhập</label><a href="#recover">Quên mật khẩu?</a></div>
+        <button class="btn btn-primary full-width" type="submit">Đăng nhập</button>
+    </form>
+    <div id="recover" class="recover-note">Chức năng phục hồi mật khẩu sẽ được bổ sung ở bước xác thực tài khoản.</div>
+    <p class="login-hint">Bản khung giao diện · Chưa kết nối xác thực</p>
+</div>
+</body>
+</html>
