@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.edu.roomlab.entity.Equipment;
 import vn.edu.roomlab.repository.EquipmentRepository;
+import vn.edu.roomlab.dto.EquipmentResponse;
 
 import java.util.List;
 
@@ -18,22 +19,31 @@ public class EquipmentService {
         this.equipmentRepository = equipmentRepository;
     }
 
-    public List<Equipment> getAllEquipments() {
-        return equipmentRepository.findAll();
+    public List<EquipmentResponse> getAllEquipments() {
+        return equipmentRepository.findAll()
+                .stream()
+                .map(EquipmentResponse::from)
+                .toList();
     }
 
-    public Equipment getEquipmentById(Integer id) {
-        return equipmentRepository.findById(id)
+    public EquipmentResponse getEquipmentById(Integer id) {
+        Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
                         "Không tìm thấy thiết bị có ID: " + id));
+
+        return EquipmentResponse.from(equipment);
     }
 
-    public Equipment saveEquipment(Equipment equipment) {
-        return equipmentRepository.save(equipment);
+    public EquipmentResponse saveEquipment(Equipment equipment) {
+        Equipment saved = equipmentRepository.save(equipment);
+        return EquipmentResponse.from(saved);
     }
 
     public void deleteEquipment(Integer id) {
-        Equipment equipment = getEquipmentById(id);
+        Equipment equipment = equipmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        "Không tìm thấy thiết bị có ID: " + id));
+
         equipmentRepository.delete(equipment);
     }
 }

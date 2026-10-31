@@ -1,9 +1,10 @@
-
 package vn.edu.roomlab.controller;
 
 import org.springframework.web.bind.annotation.*;
+
 import vn.edu.roomlab.entity.Booking;
 import vn.edu.roomlab.service.BookingService;
+import vn.edu.roomlab.dto.BookingResponse;
 
 import java.util.List;
 
@@ -19,23 +20,24 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> getAll() {
+    public List<BookingResponse> getAll() {
         return bookingService.getAllBookings();
     }
 
     @GetMapping("/{id}")
-    public Booking getById(@PathVariable Integer id) {
+    public BookingResponse getById(@PathVariable Integer id) {
         return bookingService.getBookingById(id);
     }
 
     @PostMapping
-    public Booking create(@RequestBody Booking booking) {
+    public BookingResponse create(@RequestBody Booking booking) {
         return bookingService.saveBooking(booking);
     }
 
     @PutMapping("/{id}")
-    public Booking update(@PathVariable Integer id,
-                          @RequestBody Booking booking) {
+    public BookingResponse update(
+            @PathVariable Integer id,
+            @RequestBody Booking booking) {
         booking.setBookingId(id);
         return bookingService.saveBooking(booking);
     }

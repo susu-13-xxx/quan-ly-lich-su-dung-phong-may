@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.edu.roomlab.entity.Booking;
 import vn.edu.roomlab.repository.BookingRepository;
+import vn.edu.roomlab.dto.BookingResponse;
 
 import java.util.List;
 
@@ -18,22 +19,32 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<BookingResponse> getAllBookings() {
+        return bookingRepository.findAll()
+                .stream()
+                .map(BookingResponse::from)
+                .toList();
     }
 
-    public Booking getBookingById(Integer id) {
-        return bookingRepository.findById(id)
+    public BookingResponse getBookingById(Integer id) {
+        Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
                         "Không tìm thấy lịch đặt phòng có ID: " + id));
+
+        return BookingResponse.from(booking);
     }
 
-    public Booking saveBooking(Booking booking) {
-        return bookingRepository.save(booking);
+    public BookingResponse saveBooking(Booking booking) {
+        return BookingResponse.from(
+                bookingRepository.save(booking)
+        );
     }
 
     public void deleteBooking(Integer id) {
-        Booking booking = getBookingById(id);
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        "Không tìm thấy lịch đặt phòng có ID: " + id));
+
         bookingRepository.delete(booking);
     }
 }

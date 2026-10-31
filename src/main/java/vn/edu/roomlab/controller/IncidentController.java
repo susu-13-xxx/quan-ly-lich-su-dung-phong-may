@@ -1,9 +1,10 @@
-
 package vn.edu.roomlab.controller;
 
 import org.springframework.web.bind.annotation.*;
+
 import vn.edu.roomlab.entity.Incident;
 import vn.edu.roomlab.service.IncidentService;
+import vn.edu.roomlab.dto.IncidentResponse;
 
 import java.util.List;
 
@@ -19,23 +20,24 @@ public class IncidentController {
     }
 
     @GetMapping
-    public List<Incident> getAll() {
+    public List<IncidentResponse> getAll() {
         return incidentService.getAllIncidents();
     }
 
     @GetMapping("/{id}")
-    public Incident getById(@PathVariable Integer id) {
+    public IncidentResponse getById(@PathVariable Integer id) {
         return incidentService.getIncidentById(id);
     }
 
     @PostMapping
-    public Incident create(@RequestBody Incident incident) {
+    public IncidentResponse create(@RequestBody Incident incident) {
         return incidentService.saveIncident(incident);
     }
 
     @PutMapping("/{id}")
-    public Incident update(@PathVariable Integer id,
-                           @RequestBody Incident incident) {
+    public IncidentResponse update(
+            @PathVariable Integer id,
+            @RequestBody Incident incident) {
         incident.setIncidentId(id);
         return incidentService.saveIncident(incident);
     }
