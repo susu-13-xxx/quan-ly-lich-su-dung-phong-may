@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.edu.roomlab.entity.User;
+import vn.edu.roomlab.dto.UserResponse;
 import vn.edu.roomlab.repository.UserRepository;
 
 import java.util.List;
@@ -18,9 +19,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // Lấy danh sách người dùng
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // Lấy danh sách người dùng dưới dạng DTO trong transaction,
+    // đảm bảo thông tin Role (LAZY) được đọc khi Hibernate Session còn mở.
+    public List<UserResponse> getAllUserResponses() {
+        return userRepository.findAll().stream()
+                .map(UserResponse::from)
+                .toList();
+    }
+
+    public UserResponse getUserResponseById(Integer id) {
+        User user = getUserById(id);
+        return UserResponse.from(user);
     }
 
     // Tìm người dùng theo ID
