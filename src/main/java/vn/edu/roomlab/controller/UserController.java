@@ -3,6 +3,7 @@ package vn.edu.roomlab.controller;
 
 import org.springframework.web.bind.annotation.*;
 import vn.edu.roomlab.entity.User;
+import vn.edu.roomlab.dto.UserResponse;
 import vn.edu.roomlab.service.UserService;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAll() {
-        return userService.getAllUsers();
+    public List<UserResponse> getAll() {
+        return userService.getAllUserResponses();
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Integer id) {
-        return userService.getUserById(id);
+    public UserResponse getById(@PathVariable Integer id) {
+        return userService.getUserResponseById(id);
     }
 
     @PostMapping
