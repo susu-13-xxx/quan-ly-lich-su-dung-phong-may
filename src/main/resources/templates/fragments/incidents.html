@@ -92,7 +92,7 @@
                         <td class="incident-id" th:text="'#' + ${incident.incidentId}"></td>
                         <td class="incident-description-cell">
                             <strong th:text="${incident.title}"></strong>
-                            <small th:text="'Người báo: ' + ${incident.reporterUsername}"></small>
+                            <small th:text="|Người báo: ${incident.reporterUsername}|"></small>
                             <small th:if="${incident.description != null and !#strings.isEmpty(incident.description)}"
                                    th:text="${incident.description}"></small>
                         </td>
@@ -103,12 +103,12 @@
                         </td>
                         <td>
                             <span class="priority-pill"
-                                  th:classappend="' priority-' + ${#strings.toLowerCase(incident.priority)}"
+                                  th:classappend="${' priority-' + #strings.toLowerCase(incident.priority)}"
                                   th:text="${incident.priority == 'HIGH' ? 'Cao' : (incident.priority == 'MEDIUM' ? 'Trung bình' : 'Thấp')}"></span>
                         </td>
                         <td>
                             <span class="incident-status"
-                                  th:classappend="' incident-' + ${#strings.toLowerCase(incident.status)}"
+                                  th:classappend="${' incident-' + #strings.toLowerCase(incident.status)}"
                                   th:text="${incident.status == 'OPEN' ? 'Mới tiếp nhận' : (incident.status == 'IN_PROGRESS' ? 'Đang xử lý' : 'Đã khắc phục')}"></span>
                         </td>
                         <td th:text="${incident.reportedAt != null ? #temporals.format(incident.reportedAt, 'dd/MM/yyyy HH:mm') : '-'}"></td>
@@ -125,7 +125,7 @@
                             </form>
                             <small class="resolved-at"
                                   th:if="${incident.resolvedAt != null}"
-                                  th:text="'Khắc phục: ' + ${#temporals.format(incident.resolvedAt, 'dd/MM/yyyy HH:mm')}"></small>
+                                  th:text="|Khắc phục: ${#temporals.format(incident.resolvedAt, 'dd/MM/yyyy HH:mm')}|"></small>
                         </td>
                     </tr>
                 </tbody>
