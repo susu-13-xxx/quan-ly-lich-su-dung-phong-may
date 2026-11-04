@@ -11,7 +11,7 @@
         RoomLab
     </title>
 
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='20261104-luxury')}">
 </head>
 
 <body>
@@ -22,7 +22,7 @@
 
         <a class="brand" th:href="@{/dashboard}">
             <span class="brand-mark">RL</span>
-            <span>RoomLab</span>
+            <span class="brand-copy"><strong>RoomLab</strong><small>ROOM MANAGEMENT</small></span>
         </a>
 
         <div class="nav-caption">MENU CHÍNH</div>
@@ -140,7 +140,7 @@
 
                 <div>
                     <div class="eyebrow">
-                        KHÔNG GIAN LÀM VIỆC
+                        <span class="eyebrow-line"></span> KHÔNG GIAN LÀM VIỆC
                     </div>
 
                     <h1 th:text="${pageTitle}">
