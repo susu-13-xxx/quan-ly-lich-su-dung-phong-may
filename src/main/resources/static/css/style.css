@@ -51,3 +51,33 @@ a{text-decoration:none;color:inherit}.app-shell{min-height:100vh;display:flex}.s
 .report-note{font-size:11px;color:var(--muted);line-height:1.7;margin:0 2px 22px}
 @media(max-width:1050px){.report-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.report-chart-grid{grid-template-columns:1fr}.report-chart-wide{grid-column:auto}}
 @media(max-width:600px){.report-kpis{grid-template-columns:1fr 1fr}.report-filter{grid-template-columns:1fr}.report-chart-wrap{height:250px}}
+
+/* Incident management */
+.incident-report-card{border-top:3px solid #5874df}
+.incident-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.incident-form-wide{grid-column:1/-1}
+.incident-form textarea{width:100%;border:1px solid #dfe4ed;border-radius:8px;padding:11px 12px;font:inherit;font-size:12px;resize:vertical;min-height:88px}
+.incident-form textarea:focus{outline:none;border-color:#7188e9}
+.required{color:#d45a60}
+.incident-form-actions{grid-column:1/-1;display:flex;justify-content:flex-end}
+.incident-total{font-size:11px;font-weight:700;color:#5268c5;background:#eef1ff;padding:7px 11px;border-radius:20px;white-space:nowrap}
+.incident-table{min-width:900px}
+.incident-description-cell{min-width:190px;max-width:280px;white-space:normal!important}
+.incident-description-cell strong,.incident-description-cell small,.incident-table td>strong,.incident-table td>small{display:block}
+.incident-description-cell strong,.incident-table td>strong{font-size:12px;color:#28344b;margin-bottom:5px}
+.incident-description-cell small,.table-subtext,.resolved-at{font-size:10px;color:var(--muted);line-height:1.5;margin-top:3px}
+.incident-id{font-weight:800;color:#6375bd!important}
+.priority-pill,.incident-status{display:inline-flex;align-items:center;border-radius:20px;padding:6px 9px;font-size:10px;font-weight:750;white-space:nowrap}
+.priority-low{background:#edf5ff;color:#4773b8}
+.priority-medium{background:#fff5df;color:#a66b09}
+.priority-high{background:#fceced;color:#b34a50}
+.incident-open{background:#edf1ff;color:#4c63bd}
+.incident-in_progress{background:#fff5df;color:#a66b09}
+.incident-resolved{background:#e8f7ef;color:#21834d}
+.incident-status-form{display:flex;align-items:center;gap:6px;min-width:170px}
+.incident-status-form select{height:34px;min-width:112px;border:1px solid #dfe4ed;border-radius:7px;padding:0 7px;background:white;font-size:10px}
+.btn-small{padding:8px 10px;font-size:10px}
+.alert{padding:12px 15px;border-radius:9px;margin-bottom:16px;font-size:12px;font-weight:600}
+.alert-success{background:#eaf7ef;color:#237b4a;border:1px solid #ccebd8}
+.alert-error{background:#fff0f0;color:#b13f48;border:1px solid #f4d3d5}
+@media(max-width:700px){.incident-form{grid-template-columns:1fr}.incident-form-wide,.incident-form-actions{grid-column:auto}.incident-form-actions{justify-content:stretch}.incident-form-actions .btn{width:100%}}
