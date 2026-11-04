@@ -1,17 +1,95 @@
 <div th:fragment="content">
-
     <div class="card">
-        <h2>Lịch biểu tổng quan</h2>
-        <p>Theo dõi lịch sử dụng các phòng máy theo ngày và khung giờ.</p>
-
-        <div class="empty-state">
-            <h3>Lịch sử dụng phòng máy</h3>
-            <p>
-                Chức năng hiển thị lịch biểu sẽ được kết nối
-                với dữ liệu đặt phòng.
-            </p>
-            <a th:href="@{/rooms}">Xem danh sách phòng máy</a>
+        <div class="section-heading">
+            <div>
+                <h2>Lịch sử dụng phòng máy</h2>
+                <p>Lọc các yêu cầu đặt phòng đã được ghi nhận trong hệ thống.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/bookings/new}">+ Đặt phòng</a>
         </div>
+
+        <form class="filter-form" method="get" th:action="@{/timetable}">
+            <div class="form-group">
+                <label for="date">Ngày sử dụng</label>
+                <input id="date" type="date" name="date"
+                       th:value="${selectedDate != null ? #temporals.format(selectedDate, 'yyyy-MM-dd') : ''}">
+            </div>
+
+            <div class="form-group">
+                <label for="roomId">Phòng máy</label>
+                <select id="roomId" name="roomId">
+                    <option value="">Tất cả phòng</option>
+                    <option th:each="room : ${rooms}"
+                            th:value="${room.roomId}"
+                            th:text="${room.roomName}"
+                            th:selected="${selectedRoomId != null and selectedRoomId == room.roomId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Trạng thái</label>
+                <select id="status" name="status">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Chờ duyệt</option>
+                    <option value="APPROVED" th:selected="${selectedStatus == 'APPROVED'}">Đã duyệt</option>
+                    <option value="REJECTED" th:selected="${selectedStatus == 'REJECTED'}">Từ chối</option>
+                    <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">Đã hủy</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" type="submit">Lọc lịch</button>
+                <a class="btn btn-light" th:href="@{/timetable}">Xóa lọc</a>
+            </div>
+        </form>
     </div>
 
+    <div class="card">
+        <div class="section-heading">
+            <div>
+                <h2>Kết quả lịch biểu</h2>
+                <p th:text="'Tìm thấy ' + ${#lists.size(bookings)} + ' lịch đặt phòng.'">Kết quả</p>
+            </div>
+        </div>
+
+        <div class="table-responsive" th:if="${!#lists.isEmpty(bookings)}">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Khung giờ</th>
+                        <th>Phòng máy</th>
+                        <th>Người đặt</th>
+                        <th>Mục đích</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${#temporals.format(booking.bookingDate, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:text="${#temporals.format(booking.startTime, 'HH:mm')}"></span>
+                            –
+                            <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}"></span>
+                        </td>
+                        <td th:text="${booking.room.roomName}"></td>
+                        <td th:text="${booking.user.username}"></td>
+                        <td th:text="${booking.purpose != null and !booking.purpose.isBlank() ? booking.purpose : '—'}"></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${booking.status == 'APPROVED' ? ' status-approved' : (booking.status == 'PENDING' ? ' status-pending' : ' status-other')}"
+                                  th:text="${booking.status == 'APPROVED' ? 'Đã duyệt' : (booking.status == 'PENDING' ? 'Chờ duyệt' : (booking.status == 'REJECTED' ? 'Từ chối' : booking.status))}">
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(bookings)}">
+            <h3>Chưa tìm thấy lịch đặt phòng</h3>
+            <p>Thử thay đổi ngày, phòng máy hoặc trạng thái lọc nhé.</p>
+        </div>
+    </div>
 </div>
