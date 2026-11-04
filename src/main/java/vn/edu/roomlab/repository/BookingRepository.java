@@ -60,6 +60,10 @@ public interface BookingRepository
             @Param("bookingId") Integer bookingId
     );
 
+    // Lấy dữ liệu đặt phòng trong khoảng ngày để lập báo cáo.
+    List<Booking> findByBookingDateBetweenOrderByBookingDateAscStartTimeAsc(
+            LocalDate startDate, LocalDate endDate);
+
     // Lấy lịch đã đặt của một phòng trong ngày
     List<Booking>
     findByRoom_RoomIdAndBookingDateAndStatusInOrderByStartTimeAsc(
