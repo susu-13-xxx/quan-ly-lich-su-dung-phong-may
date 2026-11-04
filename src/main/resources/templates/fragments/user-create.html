@@ -1,0 +1,62 @@
+<div th:fragment="content">
+    <div class="card" style="max-width:760px;">
+        <h2>Thông tin tài khoản</h2>
+        <p>Nhập thông tin cơ bản và chọn vai trò cho tài khoản mới.</p>
+
+        <div th:if="${errorMessage}" class="empty-panel" style="padding:14px; margin:16px 0; border-left:4px solid #dc2626;">
+            <strong th:text="${errorMessage}" style="color:#dc2626;"></strong>
+        </div>
+
+        <form th:action="@{/admin/users/create}" method="post" style="margin-top:22px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+                <div>
+                    <label for="username"><strong>Tên đăng nhập *</strong></label>
+                    <input id="username" name="username" type="text" maxlength="50" required
+                           th:value="${username}" autocomplete="username"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="fullName"><strong>Họ và tên *</strong></label>
+                    <input id="fullName" name="fullName" type="text" maxlength="100" required
+                           th:value="${fullName}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="password"><strong>Mật khẩu tạm *</strong></label>
+                    <input id="password" name="password" type="password" minlength="8" required
+                           autocomplete="new-password"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                    <small>Mật khẩu tối thiểu 8 ký tự.</small>
+                </div>
+                <div>
+                    <label for="email"><strong>Email</strong></label>
+                    <input id="email" name="email" type="email" maxlength="100"
+                           th:value="${email}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="phone"><strong>Số điện thoại</strong></label>
+                    <input id="phone" name="phone" type="tel" maxlength="15"
+                           th:value="${phone}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="roleId"><strong>Vai trò *</strong></label>
+                    <select id="roleId" name="roleId" required
+                            style="width:100%; padding:11px; margin-top:7px;">
+                        <option value="">-- Chọn vai trò --</option>
+                        <option th:each="role : ${roles}"
+                                th:value="${role.roleId}"
+                                th:text="${role.roleName}"
+                                th:selected="${role.roleId == selectedRoleId}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:24px;">
+                <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+                <a th:href="@{/admin/users}" class="btn btn-light">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
