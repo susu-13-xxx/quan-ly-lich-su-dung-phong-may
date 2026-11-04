@@ -1,45 +1,156 @@
-<div th:fragment="content">
+<div th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-    <div class="card">
-        <h2>Quản lý sự cố / Báo hỏng</h2>
-        <p>Danh sách sự cố thiết bị và phòng máy được ghi nhận.</p>
+    <div th:if="${incidentSuccess}" class="alert alert-success" th:text="${incidentSuccess}"></div>
+    <div th:if="${incidentError}" class="alert alert-error" th:text="${incidentError}"></div>
 
-        <div th:if="${#lists.isEmpty(incidents)}">
-            <p>Hiện chưa có sự cố nào được ghi nhận.</p>
+    <div class="card incident-report-card">
+        <div class="section-heading">
+            <div>
+                <h2>Báo cáo sự cố mới</h2>
+                <p>Mô tả tình trạng phòng máy hoặc thiết bị cần được kiểm tra, sửa chữa.</p>
+            </div>
         </div>
 
-        <div th:unless="${#lists.isEmpty(incidents)}"
-             style="overflow-x: auto;">
+        <form method="post" th:action="@{/incidents/report}" class="incident-form">
+            <div class="form-group">
+                <label for="roomId">Phòng máy <span class="required">*</span></label>
+                <select id="roomId" name="roomId" required>
+                    <option value="">-- Chọn phòng máy --</option>
+                    <option th:each="room : ${rooms}"
+                            th:value="${room.roomId}"
+                            th:text="${room.roomName}"></option>
+                </select>
+            </div>
 
-            <table>
+            <div class="form-group">
+                <label for="equipmentId">Thiết bị liên quan</label>
+                <select id="equipmentId" name="equipmentId">
+                    <option value="">Sự cố chung của phòng / Không xác định</option>
+                    <option th:each="equipment : ${equipments}"
+                            th:value="${equipment.equipmentId}"
+                            th:attr="data-room-id=${equipment.roomId}"
+                            th:text="${equipment.equipmentName + ' — ' + equipment.equipmentType}"></option>
+                </select>
+            </div>
+
+            <div class="form-group incident-form-wide">
+                <label for="title">Tiêu đề sự cố <span class="required">*</span></label>
+                <input id="title" name="title" type="text" maxlength="150"
+                       placeholder="Ví dụ: Máy tính số 05 không khởi động" required>
+            </div>
+
+            <div class="form-group">
+                <label for="priority">Mức độ ưu tiên <span class="required">*</span></label>
+                <select id="priority" name="priority" required>
+                    <option value="LOW">Thấp</option>
+                    <option value="MEDIUM" selected>Trung bình</option>
+                    <option value="HIGH">Cao</option>
+                </select>
+            </div>
+
+            <div class="form-group incident-form-wide">
+                <label for="description">Mô tả chi tiết</label>
+                <textarea id="description" name="description" rows="3"
+                          placeholder="Mô tả hiện tượng, thời điểm xảy ra và thông tin liên quan..."></textarea>
+            </div>
+
+            <div class="incident-form-actions">
+                <button type="submit" class="btn btn-primary">Gửi báo cáo sự cố</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="section-heading">
+            <div>
+                <h2>Danh sách sự cố</h2>
+                <p>Theo dõi tiến độ tiếp nhận và xử lý các sự cố đã ghi nhận.</p>
+            </div>
+            <span class="incident-total" th:text="${#lists.size(incidents)} + ' sự cố'">0 sự cố</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(incidents)}" class="empty-state">
+            <h3>Chưa có sự cố nào</h3>
+            <p>Các báo cáo sự cố sẽ xuất hiện tại đây sau khi được gửi.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(incidents)}" class="table-responsive">
+            <table class="data-table incident-table">
                 <thead>
                     <tr>
-                        <th>Mã sự cố</th>
-                        <th>Người báo cáo</th>
-                        <th>Phòng máy</th>
-                        <th>Thiết bị</th>
-                        <th>Tiêu đề</th>
-                        <th>Mức độ</th>
+                        <th>Mã</th>
+                        <th>Nội dung / Người báo</th>
+                        <th>Phòng / Thiết bị</th>
+                        <th>Ưu tiên</th>
                         <th>Trạng thái</th>
                         <th>Thời gian báo</th>
+                        <th sec:authorize="hasAnyRole('ADMIN','TECHNICIAN')">Cập nhật</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr th:each="incident : ${incidents}">
-                        <td th:text="${incident.incidentId}"></td>
-                        <td th:text="${incident.userId}"></td>
-                        <td th:text="${incident.roomId}"></td>
-                        <td th:text="${incident.equipmentId != null ? incident.equipmentId : 'Không có'}"></td>
-                        <td th:text="${incident.title}"></td>
-                        <td th:text="${incident.priority}"></td>
-                        <td th:text="${incident.status}"></td>
+                        <td class="incident-id" th:text="'#' + ${incident.incidentId}"></td>
+                        <td class="incident-description-cell">
+                            <strong th:text="${incident.title}"></strong>
+                            <small th:text="'Người báo: ' + ${incident.reporterUsername}"></small>
+                            <small th:if="${incident.description != null and !#strings.isEmpty(incident.description)}"
+                                   th:text="${incident.description}"></small>
+                        </td>
+                        <td>
+                            <strong th:text="${incident.roomName}"></strong>
+                            <small class="table-subtext"
+                                   th:text="${incident.equipmentName != null ? incident.equipmentName : 'Sự cố chung của phòng'}"></small>
+                        </td>
+                        <td>
+                            <span class="priority-pill"
+                                  th:classappend="' priority-' + ${#strings.toLowerCase(incident.priority)}"
+                                  th:text="${incident.priority == 'HIGH' ? 'Cao' : (incident.priority == 'MEDIUM' ? 'Trung bình' : 'Thấp')}"></span>
+                        </td>
+                        <td>
+                            <span class="incident-status"
+                                  th:classappend="' incident-' + ${#strings.toLowerCase(incident.status)}"
+                                  th:text="${incident.status == 'OPEN' ? 'Mới tiếp nhận' : (incident.status == 'IN_PROGRESS' ? 'Đang xử lý' : 'Đã khắc phục')}"></span>
+                        </td>
                         <td th:text="${incident.reportedAt != null ? #temporals.format(incident.reportedAt, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                        <td sec:authorize="hasAnyRole('ADMIN','TECHNICIAN')">
+                            <form method="post"
+                                  th:action="@{/incidents/{id}/status(id=${incident.incidentId})}"
+                                  class="incident-status-form">
+                                <select name="status" aria-label="Trạng thái sự cố">
+                                    <option value="OPEN" th:selected="${incident.status == 'OPEN'}">Mới tiếp nhận</option>
+                                    <option value="IN_PROGRESS" th:selected="${incident.status == 'IN_PROGRESS'}">Đang xử lý</option>
+                                    <option value="RESOLVED" th:selected="${incident.status == 'RESOLVED'}">Đã khắc phục</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline btn-small">Lưu</button>
+                            </form>
+                            <small class="resolved-at"
+                                  th:if="${incident.resolvedAt != null}"
+                                  th:text="'Khắc phục: ' + ${#temporals.format(incident.resolvedAt, 'dd/MM/yyyy HH:mm')}"></small>
+                        </td>
                     </tr>
                 </tbody>
             </table>
-
         </div>
     </div>
 
+    <script>
+        (() => {
+            const roomSelect = document.getElementById('roomId');
+            const equipmentSelect = document.getElementById('equipmentId');
+            if (!roomSelect || !equipmentSelect) return;
+
+            const filterEquipment = () => {
+                const roomId = roomSelect.value;
+                Array.from(equipmentSelect.options).forEach((option, index) => {
+                    if (index === 0) return;
+                    const matches = !roomId || option.dataset.roomId === roomId;
+                    option.hidden = !matches;
+                    if (!matches && option.selected) equipmentSelect.value = '';
+                });
+            };
+
+            roomSelect.addEventListener('change', filterEquipment);
+            filterEquipment();
+        })();
+    </script>
 </div>
