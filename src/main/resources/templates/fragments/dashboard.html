@@ -1,6 +1,138 @@
-<div th:fragment="content">
-    <div class="card">
-        <h2>Tổng quan hệ thống</h2>
-        <p>Chào mừng bạn đến với hệ thống quản lý phòng máy RoomLab.</p>
+<div th:fragment="content" class="dashboard-page">
+
+    <section class="dashboard-welcome">
+        <div>
+            <span class="dashboard-eyebrow">ROOMLAB WORKSPACE</span>
+            <h2>Xin chào, <span th:text="${dashboardName}">Người dùng</span> 👋</h2>
+            <p>Đây là tình hình hoạt động được cập nhật từ dữ liệu hiện có của hệ thống.</p>
+        </div>
+        <div class="dashboard-date">
+            <span>HÔM NAY</span>
+            <strong th:text="${#temporals.format(dashboardDate, 'dd/MM/yyyy')}">04/11/2026</strong>
+        </div>
+    </section>
+
+    <section class="dashboard-kpis">
+        <article class="dashboard-kpi">
+            <div class="dashboard-kpi-icon rooms-icon">▣</div>
+            <div><span>TỔNG SỐ PHÒNG</span><strong th:text="${totalRooms}">0</strong>
+                <small><b th:text="${availableRooms}">0</b> phòng đang khả dụng</small></div>
+        </article>
+        <article class="dashboard-kpi">
+            <div class="dashboard-kpi-icon bookings-icon">▦</div>
+            <div><span>LỊCH ĐẶT HÔM NAY</span><strong th:text="${todayBookings}">0</strong>
+                <small>Lịch đặt trong ngày của <span th:text="${isAdmin} ? 'toàn hệ thống' : 'tài khoản'">tài khoản</span></small></div>
+        </article>
+        <article class="dashboard-kpi">
+            <div class="dashboard-kpi-icon pending-icon">◷</div>
+            <div><span th:text="${isAdmin} ? 'CHỜ DUYỆT' : 'LỊCH CHỜ XỬ LÝ'">CHỜ DUYỆT</span>
+                <strong th:text="${pendingBookings}">0</strong>
+                <small th:text="${isAdmin} ? 'Yêu cầu cần quản trị viên xem xét' : 'Yêu cầu đặt phòng của bạn'">Yêu cầu cần xử lý</small></div>
+        </article>
+        <article class="dashboard-kpi">
+            <div class="dashboard-kpi-icon incidents-icon">⚠</div>
+            <div><span>SỰ CỐ CHƯA KHẮC PHỤC</span><strong th:text="${activeIncidents}">0</strong>
+                <small><b th:text="${highPriorityIncidents}">0</b> sự cố mức độ cao</small></div>
+        </article>
+    </section>
+
+    <section class="dashboard-shortcuts">
+        <a th:href="@{/bookings/new}" class="dashboard-shortcut">
+            <span class="shortcut-symbol">＋</span><span><strong>Đặt phòng máy</strong><small>Tạo yêu cầu sử dụng phòng</small></span><b>→</b>
+        </a>
+        <a th:href="@{/timetable}" class="dashboard-shortcut">
+            <span class="shortcut-symbol">▦</span><span><strong>Xem lịch biểu</strong><small>Theo dõi lịch sử dụng phòng</small></span><b>→</b>
+        </a>
+        <a th:href="@{/incidents}" class="dashboard-shortcut">
+            <span class="shortcut-symbol">⚠</span><span><strong>Báo sự cố</strong><small>Gửi và theo dõi báo hỏng</small></span><b>→</b>
+        </a>
+        <a th:href="@{/rooms}" class="dashboard-shortcut">
+            <span class="shortcut-symbol">▣</span><span><strong>Danh sách phòng</strong><small>Xem phòng và tình trạng</small></span><b>→</b>
+        </a>
+    </section>
+
+    <div class="dashboard-columns">
+        <section class="card dashboard-panel">
+            <div class="section-heading">
+                <div><h2>Lịch sắp tới</h2><p>Các yêu cầu từ hôm nay trở đi đang chờ hoặc đã được duyệt</p></div>
+                <a th:href="@{/timetable}" class="dashboard-text-link">Xem lịch biểu →</a>
+            </div>
+            <div th:if="${#lists.isEmpty(upcomingBookings)}" class="dashboard-empty">
+                <span>◷</span><strong>Chưa có lịch sắp tới</strong><small>Các lịch đặt mới sẽ xuất hiện tại đây.</small>
+            </div>
+            <div th:unless="${#lists.isEmpty(upcomingBookings)}" class="dashboard-list">
+                <div class="dashboard-list-row" th:each="booking : ${upcomingBookings}">
+                    <div class="dashboard-list-date">
+                        <strong th:text="${#temporals.format(booking.bookingDate, 'dd')}">04</strong>
+                        <small th:text="${#temporals.format(booking.bookingDate, 'MM/yyyy')}">11/2026</small>
+                    </div>
+                    <div class="dashboard-list-main">
+                        <strong th:text="${booking.roomName}">Phòng máy</strong>
+                        <small><span th:text="${#temporals.format(booking.startTime, 'HH:mm')}">08:00</span> – <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}">09:00</span></small>
+                    </div>
+                    <span class="dashboard-status"
+                          th:classappend="${booking.status == 'APPROVED'} ? ' dashboard-status-approved' : ' dashboard-status-pending'"
+                          th:text="${booking.status == 'APPROVED'} ? 'Đã duyệt' : 'Chờ duyệt'">Chờ duyệt</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card dashboard-panel">
+            <div class="section-heading">
+                <div><h2>Sự cố gần đây</h2><p>Tình trạng các báo cáo mới nhất</p></div>
+                <a th:href="@{/incidents}" class="dashboard-text-link">Xem tất cả →</a>
+            </div>
+            <div th:if="${#lists.isEmpty(recentIncidents)}" class="dashboard-empty">
+                <span>✓</span><strong>Chưa có báo cáo sự cố</strong><small>Hiện chưa có sự cố trong danh sách theo dõi.</small>
+            </div>
+            <div th:unless="${#lists.isEmpty(recentIncidents)}" class="dashboard-list">
+                <div class="dashboard-list-row incident-dashboard-row" th:each="incident : ${recentIncidents}">
+                    <div class="incident-mini-icon"
+                         th:classappend="${incident.priority == 'HIGH'} ? ' incident-mini-high' : ''">⚠</div>
+                    <div class="dashboard-list-main">
+                        <strong th:text="${incident.title}">Tên sự cố</strong>
+                        <small><span th:text="${incident.roomName}">Phòng</span> · <span th:text="${#temporals.format(incident.reportedAt, 'dd/MM HH:mm')}">04/11 08:00</span></small>
+                    </div>
+                    <span class="dashboard-status"
+                          th:classappend="${incident.status == 'RESOLVED'} ? ' dashboard-status-approved' : ' dashboard-status-pending'"
+                          th:text="${incident.status == 'RESOLVED'} ? 'Đã xử lý' : (${incident.status == 'IN_PROGRESS'} ? 'Đang xử lý' : 'Mới')">Mới</span>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <section class="card dashboard-panel dashboard-recent-bookings">
+        <div class="section-heading">
+            <div><h2>Lịch đặt gần đây</h2><p>Theo dõi những yêu cầu được tạo gần nhất</p></div>
+            <a th:href="@{/timetable}" class="dashboard-text-link">Mở lịch biểu →</a>
+        </div>
+        <div class="table-responsive" th:if="${!#lists.isEmpty(recentBookings)}">
+            <table class="data-table">
+                <thead><tr><th>MÃ LỊCH</th><th>PHÒNG</th><th>NGÀY SỬ DỤNG</th><th>THỜI GIAN</th><th>TRẠNG THÁI</th></tr></thead>
+                <tbody>
+                    <tr th:each="booking : ${recentBookings}">
+                        <td th:text="'#' + ${booking.id}">#1</td>
+                        <td th:text="${booking.roomName}">Phòng máy</td>
+                        <td th:text="${#temporals.format(booking.bookingDate, 'dd/MM/yyyy')}">04/11/2026</td>
+                        <td><span th:text="${#temporals.format(booking.startTime, 'HH:mm')}">08:00</span> – <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}">09:00</span></td>
+                        <td>
+                            <span class="dashboard-status"
+                                  th:classappend="${booking.status == 'APPROVED'} ? ' dashboard-status-approved' : (${booking.status == 'PENDING'} ? ' dashboard-status-pending' : ' dashboard-status-neutral')"
+                                  th:text="${booking.status == 'APPROVED'} ? 'Đã duyệt' : (${booking.status == 'PENDING'} ? 'Chờ duyệt' : (${booking.status == 'REJECTED'} ? 'Từ chối' : 'Đã hủy'))">Chờ duyệt</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${#lists.isEmpty(recentBookings)}" class="dashboard-empty dashboard-empty-compact">
+            <strong>Chưa có lịch đặt nào</strong><small>Bắt đầu bằng cách tạo một yêu cầu đặt phòng.</small>
+            <a th:href="@{/bookings/new}" class="btn btn-primary">＋ Đặt phòng ngay</a>
+        </div>
+    </section>
+
+    <section class="dashboard-admin-note" sec:authorize="hasRole('ADMIN')">
+        <div><strong>Không gian quản trị</strong><small th:text="'Hiện có ' + ${totalUsers} + ' tài khoản trong hệ thống.'">Thông tin quản trị</small></div>
+        <a th:href="@{/admin/bookings}" class="btn btn-outline">Duyệt lịch đặt</a>
+        <a th:href="@{/admin/reports}" class="btn btn-outline">Xem báo cáo hiệu suất</a>
+    </section>
 </div>
