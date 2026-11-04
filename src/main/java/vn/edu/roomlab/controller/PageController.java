@@ -14,6 +14,7 @@ import vn.edu.roomlab.service.RoleService;
 import vn.edu.roomlab.service.IncidentService;
 import vn.edu.roomlab.service.BookingService;
 import vn.edu.roomlab.service.RoomService;
+import vn.edu.roomlab.service.ReportService;
 
 @Controller
 public class PageController {
@@ -23,19 +24,22 @@ public class PageController {
     private final IncidentService incidentService;
     private final BookingService bookingService;
     private final RoomService roomService;
+    private final ReportService reportService;
 
     public PageController(
             UserService userService,
             RoleService roleService,
             IncidentService incidentService,
             BookingService bookingService,
-            RoomService roomService
+            RoomService roomService,
+            ReportService reportService
     ) {
         this.userService = userService;
         this.roleService = roleService;
         this.incidentService = incidentService;
         this.bookingService = bookingService;
         this.roomService = roomService;
+        this.reportService = reportService;
     }
 
     private String page(
@@ -128,7 +132,27 @@ public class PageController {
 
     // BÁO CÁO HIỆU SUẤT
     @GetMapping("/admin/reports")
-    public String reports(Model model) {
+    public String reports(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            Model model
+    ) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = from != null ? from : today.minusDays(29);
+        LocalDate endDate = to != null ? to : today;
+
+        if (startDate.isAfter(endDate)) {
+            LocalDate temporary = startDate;
+            startDate = endDate;
+            endDate = temporary;
+        }
+
+        model.addAllAttributes(reportService.buildReport(startDate, endDate));
+        model.addAttribute("selectedFrom", startDate);
+        model.addAttribute("selectedTo", endDate);
+
         return page(
                 model,
                 "Báo cáo hiệu suất sử dụng",
