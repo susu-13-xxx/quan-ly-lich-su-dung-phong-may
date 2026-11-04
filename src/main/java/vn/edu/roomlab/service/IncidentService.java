@@ -140,6 +140,26 @@ public class IncidentService {
         );
     }
 
+    // Chỉ cập nhật trạng thái, không cho phép sửa nội dung báo cáo gốc.
+    public void updateIncidentStatus(Integer id, String status) {
+        if (status == null || !VALID_STATUSES.contains(status)) {
+            throw new IllegalArgumentException("Trạng thái sự cố không hợp lệ");
+        }
+
+        Incident incident = findIncident(id);
+        incident.setStatus(status);
+
+        if ("RESOLVED".equals(status)) {
+            if (incident.getResolvedAt() == null) {
+                incident.setResolvedAt(LocalDateTime.now());
+            }
+        } else {
+            incident.setResolvedAt(null);
+        }
+
+        incidentRepository.save(incident);
+    }
+
     public void deleteIncident(Integer id) {
         Incident incident = findIncident(id);
         incidentRepository.delete(incident);
