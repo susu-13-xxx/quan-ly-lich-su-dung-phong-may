@@ -1,4 +1,3 @@
-
 package vn.edu.roomlab.controller;
 
 import org.springframework.stereotype.Controller;
@@ -20,14 +19,28 @@ public class RoomPageController {
     @GetMapping("/rooms")
     public String listRooms(Model model) {
         model.addAttribute("rooms", roomService.getAllRooms());
-        return "rooms";
+        model.addAttribute("pageTitle", "Danh sách phòng");
+        model.addAttribute(
+                "pageDescription",
+                "Xem thông tin và tình trạng hoạt động của các phòng máy."
+        );
+        model.addAttribute("activePage", "rooms");
+        model.addAttribute("content", "fragments/rooms");
+
+        return "layout";
     }
 
     @GetMapping("/rooms/{id}")
     public String roomDetail(@PathVariable Integer id, Model model) {
         model.addAttribute("room", roomService.getRoomById(id));
         model.addAttribute("pageTitle", "Chi tiết phòng");
-        return "room-detail";
-    }
+        model.addAttribute(
+                "pageDescription",
+                "Thông tin chi tiết về phòng máy trong hệ thống."
+        );
+        model.addAttribute("activePage", "rooms");
+        model.addAttribute("content", "fragments/room-detail");
 
+        return "layout";
+    }
 }
