@@ -154,7 +154,8 @@ public class PageController {
 
     // THÔNG TIN CÁ NHÂN
     @GetMapping("/profile")
-    public String profile(Model model) {
+    public String profile(Principal principal, Model model) {
+        model.addAttribute("profileUser", userService.getUserByUsername(principal.getName()));
         return page(
                 model,
                 "Thông tin cá nhân / Đổi mật khẩu",
