@@ -47,6 +47,51 @@ public class UserService {
                         "Không tìm thấy người dùng có ID: " + id));
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản đang đăng nhập."));
+    }
+
+    public void updateOwnProfile(String username, String fullName, String email, String phone) {
+        User user = getUserByUsername(username);
+        String normalizedEmail = email == null || email.isBlank() ? null : email.trim();
+
+        if (normalizedEmail != null
+                && userRepository.existsByEmailAndUserIdNot(normalizedEmail, user.getUserId())) {
+            throw new IllegalArgumentException("Email này đã được tài khoản khác sử dụng.");
+        }
+
+        if (fullName == null || fullName.isBlank()) {
+            throw new IllegalArgumentException("Họ và tên không được để trống.");
+        }
+
+        user.setFullName(fullName.trim());
+        user.setEmail(normalizedEmail);
+        user.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
+        userRepository.save(user);
+    }
+
+    public void changeOwnPassword(String username, String currentPassword,
+                                  String newPassword, String confirmPassword) {
+        User user = getUserByUsername(username);
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác.");
+        }
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất 8 ký tự.");
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Mật khẩu xác nhận không khớp.");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu mới phải khác mật khẩu hiện tại.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     // Thêm hoặc cập nhật người dùng
     public User saveUser(User user) {
         return userRepository.save(user);
