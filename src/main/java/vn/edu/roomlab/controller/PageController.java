@@ -1,4 +1,3 @@
-
 package vn.edu.roomlab.controller;
 
 import java.time.LocalDate;
@@ -69,6 +68,11 @@ public class PageController {
         return "login";
     }
 
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+
     // TỔNG QUAN
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -108,23 +112,15 @@ public class PageController {
     // NGƯỜI DÙNG VÀ PHÂN QUYỀN
     @GetMapping("/admin/users")
     public String users(Model model) {
-
-        model.addAttribute(
-            "users",
-            userService.getAllUserResponses()
-        );
-
-        model.addAttribute(
-            "roles",
-            roleService.getAllRoles()
-        );
+        model.addAttribute("users", userService.getAllUserResponses());
+        model.addAttribute("roles", roleService.getAllRoles());
 
         return page(
-            model,
-            "Quản lý người dùng & phân quyền",
-            "Quản lý tài khoản và vai trò truy cập.",
-            "users",
-            "fragments/users"
+                model,
+                "Quản lý người dùng & phân quyền",
+                "Quản lý tài khoản và vai trò truy cập.",
+                "users",
+                "fragments/users"
         );
     }
 
@@ -143,18 +139,14 @@ public class PageController {
     // SỰ CỐ / BÁO HỎNG
     @GetMapping("/incidents")
     public String incidents(Model model) {
-
-        model.addAttribute(
-            "incidents",
-            incidentService.getAllIncidents()
-        );
+        model.addAttribute("incidents", incidentService.getAllIncidents());
 
         return page(
-            model,
-            "Quản lý sự cố / Báo hỏng",
-            "Gửi và theo dõi tình trạng thiết bị hoặc phòng máy gặp sự cố.",
-            "incidents",
-            "fragments/incidents"
+                model,
+                "Quản lý sự cố / Báo hỏng",
+                "Gửi và theo dõi tình trạng thiết bị hoặc phòng máy gặp sự cố.",
+                "incidents",
+                "fragments/incidents"
         );
     }
 
