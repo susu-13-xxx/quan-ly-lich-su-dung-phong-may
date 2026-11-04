@@ -1,16 +1,175 @@
 <div th:fragment="content">
 
     <div class="card">
-        <h2>Báo cáo hiệu suất sử dụng</h2>
-        <p>Thống kê tình hình khai thác và sử dụng phòng máy.</p>
+        <div class="section-heading">
+            <div>
+                <h2>Bộ lọc thời gian</h2>
+                <p>Chọn khoảng ngày để cập nhật toàn bộ số liệu và biểu đồ.</p>
+            </div>
+        </div>
+        <form class="filter-form report-filter" method="get" th:action="@{/admin/reports}">
+            <div class="form-group">
+                <label for="from">Từ ngày</label>
+                <input type="date" id="from" name="from" th:value="${selectedFrom}">
+            </div>
+            <div class="form-group">
+                <label for="to">Đến ngày</label>
+                <input type="date" id="to" name="to" th:value="${selectedTo}">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Áp dụng</button>
+                <a class="btn btn-light" th:href="@{/admin/reports}">30 ngày gần nhất</a>
+            </div>
+        </form>
+    </div>
 
-        <div class="empty-state">
-            <h3>Chưa có dữ liệu thống kê</h3>
-            <p>
-                Báo cáo sẽ được xây dựng từ dữ liệu đặt phòng,
-                thời gian sử dụng và tình trạng phòng máy.
-            </p>
+    <div class="report-kpis">
+        <div class="report-kpi">
+            <span class="report-kpi-label">TỔNG YÊU CẦU</span>
+            <strong th:text="${totalBookings}">0</strong>
+            <small>Trong khoảng thời gian đã chọn</small>
+        </div>
+        <div class="report-kpi">
+            <span class="report-kpi-label">ĐÃ ĐƯỢC DUYỆT</span>
+            <strong th:text="${approvedBookings}">0</strong>
+            <small>Các lượt đặt có trạng thái APPROVED</small>
+        </div>
+        <div class="report-kpi">
+            <span class="report-kpi-label">ĐANG CHỜ DUYỆT</span>
+            <strong th:text="${pendingBookings}">0</strong>
+            <small>Các yêu cầu chưa được xử lý</small>
+        </div>
+        <div class="report-kpi">
+            <span class="report-kpi-label">THỜI LƯỢNG ĐÃ DUYỆT</span>
+            <strong><span th:text="${approvedHours}">0</span> <small>giờ</small></strong>
+            <small>Tổng thời lượng của lịch đã duyệt</small>
         </div>
     </div>
+
+    <div class="report-chart-grid">
+        <div class="card report-chart-card">
+            <div class="section-heading">
+                <div>
+                    <h2>Lượt đặt phòng theo ngày</h2>
+                    <p>Số yêu cầu được tạo theo từng ngày.</p>
+                </div>
+            </div>
+            <div class="report-chart-wrap">
+                <canvas id="bookingTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card report-chart-card">
+            <div class="section-heading">
+                <div>
+                    <h2>Cơ cấu trạng thái</h2>
+                    <p>Phân bố yêu cầu theo trạng thái xử lý.</p>
+                </div>
+            </div>
+            <div class="report-chart-wrap report-doughnut-wrap">
+                <canvas id="bookingStatusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card report-chart-card report-chart-wide">
+            <div class="section-heading">
+                <div>
+                    <h2>Thời lượng sử dụng theo phòng</h2>
+                    <p>Tổng số giờ của các lịch đã được duyệt, tính theo từng phòng.</p>
+                </div>
+            </div>
+            <div class="report-chart-wrap">
+                <canvas id="roomUsageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <p class="report-note">
+        Lưu ý: Thời lượng sử dụng được tính từ các yêu cầu có trạng thái Đã duyệt,
+        dựa trên giờ bắt đầu và giờ kết thúc. Đây là số giờ đã được xếp lịch,
+        không phải dữ liệu đo thời gian sử dụng thực tế tại phòng.
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        (() => {
+            const trendLabels = [[${trendLabels}]];
+            const trendValues = [[${trendValues}]];
+            const roomLabels = [[${roomLabels}]];
+            const roomValues = [[${roomValues}]];
+            const statusLabels = [[${statusLabels}]];
+            const statusValues = [[${statusValues}]];
+
+            if (typeof Chart === 'undefined') {
+                document.querySelectorAll('.report-chart-wrap').forEach((element) => {
+                    element.innerHTML = '<p class="empty-state">Không tải được thư viện biểu đồ. Vui lòng kiểm tra kết nối mạng.</p>';
+                });
+                return;
+            }
+
+            Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+            Chart.defaults.color = '#758096';
+
+            new Chart(document.getElementById('bookingTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: 'Lượt đặt',
+                        data: trendValues,
+                        borderColor: '#4565db',
+                        backgroundColor: 'rgba(69, 101, 219, 0.12)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+
+            new Chart(document.getElementById('bookingStatusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: ['#f0b84b', '#35a56f', '#df6b70', '#8792a8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    cutout: '62%'
+                }
+            });
+
+            new Chart(document.getElementById('roomUsageChart'), {
+                type: 'bar',
+                data: {
+                    labels: roomLabels,
+                    datasets: [{
+                        label: 'Giờ đã được duyệt',
+                        data: roomValues,
+                        backgroundColor: '#6f86e8',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        })();
+    </script>
 
 </div>
