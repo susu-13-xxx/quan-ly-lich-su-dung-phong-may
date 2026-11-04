@@ -8,6 +8,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
+import vn.edu.roomlab.dto.IncidentRequest;
+import vn.edu.roomlab.service.EquipmentService;
 
 import vn.edu.roomlab.service.UserService;
 import vn.edu.roomlab.service.RoleService;
@@ -25,6 +34,7 @@ public class PageController {
     private final BookingService bookingService;
     private final RoomService roomService;
     private final ReportService reportService;
+    private final EquipmentService equipmentService;
 
     public PageController(
             UserService userService,
@@ -32,7 +42,8 @@ public class PageController {
             IncidentService incidentService,
             BookingService bookingService,
             RoomService roomService,
-            ReportService reportService
+            ReportService reportService,
+            EquipmentService equipmentService
     ) {
         this.userService = userService;
         this.roleService = roleService;
@@ -40,6 +51,7 @@ public class PageController {
         this.bookingService = bookingService;
         this.roomService = roomService;
         this.reportService = reportService;
+        this.equipmentService = equipmentService;
     }
 
     private String page(
@@ -166,6 +178,8 @@ public class PageController {
     @GetMapping("/incidents")
     public String incidents(Model model) {
         model.addAttribute("incidents", incidentService.getAllIncidents());
+        model.addAttribute("rooms", roomService.getAllRooms());
+        model.addAttribute("equipments", equipmentService.getAllEquipments());
 
         return page(
                 model,
@@ -174,6 +188,50 @@ public class PageController {
                 "incidents",
                 "fragments/incidents"
         );
+    }
+
+    @PostMapping("/incidents/report")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'TECHNICIAN')")
+    public String reportIncident(
+            @RequestParam Integer roomId,
+            @RequestParam(required = false) Integer equipmentId,
+            @RequestParam String title,
+            @RequestParam(required = false) String description,
+            @RequestParam String priority,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            incidentService.createIncident(
+                    new IncidentRequest(roomId, equipmentId, title,
+                            description, priority, null),
+                    authentication.getName()
+            );
+            redirectAttributes.addFlashAttribute(
+                    "incidentSuccess", "Báo cáo sự cố đã được gửi thành công.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute(
+                    "incidentError", ex.getMessage());
+        }
+        return "redirect:/incidents";
+    }
+
+    @PostMapping("/incidents/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    public String updateIncidentStatus(
+            @PathVariable Integer id,
+            @RequestParam String status,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            incidentService.updateIncidentStatus(id, status);
+            redirectAttributes.addFlashAttribute(
+                    "incidentSuccess", "Trạng thái sự cố đã được cập nhật.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute(
+                    "incidentError", ex.getMessage());
+        }
+        return "redirect:/incidents";
     }
 
     // THÔNG TIN CÁ NHÂN
