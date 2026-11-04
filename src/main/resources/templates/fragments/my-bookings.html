@@ -1,0 +1,91 @@
+<div th:fragment="content">
+    <style>
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .booking-table th,
+        .booking-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .booking-table th { background: #f4f6fa; }
+        .booking-table .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .booking-table .pending { background: #fff3cd; color: #856404; }
+        .booking-table .approved { background: #d4edda; color: #155724; }
+        .booking-table .rejected { background: #f8d7da; color: #721c24; }
+        .table-wrapper { overflow-x: auto; }
+        .empty-message {
+            padding: 35px;
+            text-align: center;
+            background: white;
+            border-radius: 12px;
+        }
+    </style>
+
+    <div class="card">
+        <div class="section-heading">
+            <div>
+                <h2>Lịch sử đặt phòng của tôi</h2>
+                <p>Xem lại các yêu cầu sử dụng phòng máy đã gửi.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/bookings/new}">
+                + Đặt phòng mới
+            </a>
+        </div>
+
+        <div class="table-wrapper"
+             th:if="${bookings != null and !bookings.isEmpty()}">
+            <table class="booking-table">
+                <thead>
+                <tr>
+                    <th>Mã yêu cầu</th>
+                    <th>Phòng</th>
+                    <th>Ngày đặt</th>
+                    <th>Giờ bắt đầu</th>
+                    <th>Giờ kết thúc</th>
+                    <th>Mục đích</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.bookingId}"></td>
+                    <td th:text="${booking.roomId != null ? 'Phòng #' + booking.roomId : 'N/A'}"></td>
+                    <td th:text="${booking.bookingDate}"></td>
+                    <td th:text="${booking.startTime}"></td>
+                    <td th:text="${booking.endTime}"></td>
+                    <td th:text="${booking.purpose != null ? booking.purpose : 'Không có'}"></td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${booking.status == 'PENDING' ? ' pending' : (booking.status == 'APPROVED' ? ' approved' : ' rejected')}"
+                              th:text="${booking.status == 'PENDING' ? 'Chờ duyệt' : (booking.status == 'APPROVED' ? 'Đã duyệt' : 'Đã từ chối')}">
+                        </span>
+                    </td>
+                    <td th:text="${booking.createdAt != null ? #temporals.format(booking.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-message"
+             th:if="${bookings == null or bookings.isEmpty()}">
+            <h2>Chưa có lịch sử đặt phòng</h2>
+            <p>Cậu chưa gửi yêu cầu đặt phòng nào.</p>
+            <a class="btn btn-primary" th:href="@{/bookings/new}">
+                Tạo yêu cầu đặt phòng
+            </a>
+        </div>
+    </div>
+</div>
