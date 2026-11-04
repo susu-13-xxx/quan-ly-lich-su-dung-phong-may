@@ -1,16 +1,90 @@
 <div th:fragment="content">
 
-    <div class="card">
-        <h2>Thông tin cá nhân</h2>
-        <p>Quản lý thông tin tài khoản và bảo mật cá nhân.</p>
+    <div th:if="${profileUpdated}" class="card" style="margin-bottom:18px; border-left:4px solid #16a34a;">
+        <strong style="color:#15803d;">Cập nhật thông tin cá nhân thành công!</strong>
+    </div>
+    <div th:if="${passwordChanged}" class="card" style="margin-bottom:18px; border-left:4px solid #16a34a;">
+        <strong style="color:#15803d;">Đổi mật khẩu thành công!</strong>
+    </div>
+    <div th:if="${profileError}" class="card" style="margin-bottom:18px; border-left:4px solid #dc2626;">
+        <strong style="color:#dc2626;" th:text="${profileError}"></strong>
+    </div>
 
-        <div class="empty-state">
-            <h3>Thông tin tài khoản</h3>
-            <p>
-                Chức năng hiển thị và cập nhật hồ sơ cá nhân
-                sẽ được kết nối với tài khoản đang đăng nhập.
-            </p>
+    <div class="card" style="margin-bottom:22px;">
+        <h2>Thông tin tài khoản</h2>
+        <p>Xem thông tin đăng nhập và vai trò hiện tại của bạn.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-top:18px;">
+            <div>
+                <small>Tên đăng nhập</small>
+                <p><strong th:text="${profileUser.username}"></strong></p>
+            </div>
+            <div>
+                <small>Vai trò</small>
+                <p><strong th:text="${profileUser.role.roleName}"></strong></p>
+            </div>
+            <div>
+                <small>Trạng thái</small>
+                <p><strong th:text="${profileUser.status}"></strong></p>
+            </div>
+            <div>
+                <small>Ngày tạo tài khoản</small>
+                <p><strong th:text="${profileUser.createdAt != null ? #temporals.format(profileUser.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></strong></p>
+            </div>
         </div>
+    </div>
+
+    <div class="card" style="margin-bottom:22px;">
+        <h2>Chỉnh sửa thông tin cá nhân</h2>
+        <p>Cập nhật họ tên, email và số điện thoại của bạn.</p>
+        <form th:action="@{/profile/update}" method="post" style="margin-top:20px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+                <div>
+                    <label for="fullName"><strong>Họ và tên *</strong></label>
+                    <input id="fullName" name="fullName" type="text" maxlength="100" required
+                           th:value="${profileUser.fullName}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="email"><strong>Email</strong></label>
+                    <input id="email" name="email" type="email" maxlength="100"
+                           th:value="${profileUser.email}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+                <div>
+                    <label for="phone"><strong>Số điện thoại</strong></label>
+                    <input id="phone" name="phone" type="tel" maxlength="15"
+                           th:value="${profileUser.phone}"
+                           style="width:100%; padding:11px; margin-top:7px;">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:20px;">Lưu thay đổi</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Đổi mật khẩu</h2>
+        <p>Để bảo vệ tài khoản, hãy sử dụng mật khẩu mới có ít nhất 8 ký tự.</p>
+        <form th:action="@{/profile/change-password}" method="post" style="margin-top:20px; max-width:520px;">
+            <div style="margin-bottom:16px;">
+                <label for="currentPassword"><strong>Mật khẩu hiện tại *</strong></label>
+                <input id="currentPassword" name="currentPassword" type="password" required
+                       autocomplete="current-password"
+                       style="width:100%; padding:11px; margin-top:7px;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label for="newPassword"><strong>Mật khẩu mới *</strong></label>
+                <input id="newPassword" name="newPassword" type="password" minlength="8" required
+                       autocomplete="new-password"
+                       style="width:100%; padding:11px; margin-top:7px;">
+            </div>
+            <div style="margin-bottom:18px;">
+                <label for="confirmPassword"><strong>Xác nhận mật khẩu mới *</strong></label>
+                <input id="confirmPassword" name="confirmPassword" type="password" minlength="8" required
+                       autocomplete="new-password"
+                       style="width:100%; padding:11px; margin-top:7px;">
+            </div>
+            <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
+        </form>
     </div>
 
 </div>
