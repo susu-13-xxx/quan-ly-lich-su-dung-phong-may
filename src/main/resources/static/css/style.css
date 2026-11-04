@@ -144,3 +144,229 @@ a{text-decoration:none;color:inherit}.app-shell{min-height:100vh;display:flex}.s
 @media(max-width:1100px){.dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.dashboard-columns{grid-template-columns:1fr}.dashboard-welcome{align-items:flex-start;flex-direction:column}.dashboard-date{min-width:0;flex-direction:row;align-items:center;justify-content:space-between;width:100%}}
 @media(max-width:520px){.dashboard-kpis{grid-template-columns:1fr 1fr;gap:9px}.dashboard-kpi{padding:12px;gap:9px}.dashboard-kpi-icon{width:34px;height:34px;flex-basis:34px;font-size:16px}.dashboard-kpi>div:last-child>span{font-size:8px}.dashboard-kpi>div:last-child>strong{font-size:21px}.dashboard-shortcuts{grid-template-columns:1fr 1fr;gap:8px}.dashboard-shortcut{padding:11px;gap:8px}.dashboard-shortcut small{font-size:8px}.dashboard-list-row{gap:8px}.dashboard-status{font-size:8px;padding:5px 6px}.dashboard-admin-note{align-items:flex-start;flex-wrap:wrap}.dashboard-admin-note>div{width:100%}}
+
+
+
+/* =========================================================
+   ROOMLAB — LUXURY MODERN THEME
+   Ivory canvas · Midnight navy · Champagne gold
+   ========================================================= */
+:root{
+  --navy:#17243d;
+  --blue:#344d78;
+  --ink:#202a3b;
+  --muted:#7d8492;
+  --line:#e9e3d9;
+  --bg:#f6f4ef;
+  --gold:#c7a76a;
+  --gold-deep:#a9874e;
+  --surface:#fffefa;
+  --shadow-soft:0 12px 34px rgba(35,39,49,.055);
+  --shadow-hover:0 18px 38px rgba(35,39,49,.10);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;letter-spacing:.005em}
+::selection{background:#e8dcc5;color:#17243d}
+a{transition:color .2s ease,background .2s ease,border-color .2s ease,transform .2s ease}
+.app-shell{background:radial-gradient(ellipse at 80% 0%,rgba(214,196,160,.12),transparent 34%),var(--bg)}
+.sidebar{
+  width:272px;padding:27px 17px 20px;
+  background:linear-gradient(165deg,#17243d 0%,#1c2b47 55%,#111c31 100%);
+  border-right:1px solid rgba(255,255,255,.07);
+  box-shadow:8px 0 30px rgba(19,29,48,.07);
+}
+.brand{gap:12px;padding:0 10px 29px;font-size:21px;letter-spacing:-.6px}
+.brand-mark{
+  width:39px;height:39px;border-radius:13px;
+  background:linear-gradient(145deg,#e4cf9e,#b48f52);
+  color:#1b2940;font-weight:900;font-size:13px;
+  box-shadow:0 5px 16px rgba(199,167,106,.22);
+}
+.nav-caption{color:#9b9a96;font-size:9px;letter-spacing:1.8px;padding:13px 13px 9px}
+.menu{gap:5px}
+.menu a,.menu .logout-btn{
+  border:1px solid transparent;border-radius:10px;padding:11px 12px;
+  color:#c5ccda;font-size:12px;font-weight:550;transition:all .2s ease;
+}
+.menu a:hover,.menu a.active{
+  background:linear-gradient(100deg,rgba(199,167,106,.17),rgba(199,167,106,.055));
+  color:#fff;border-color:rgba(199,167,106,.13);
+}
+.menu a.active{box-shadow:inset 3px 0 var(--gold)}
+.menu form{margin:0}
+.menu .logout-btn{
+  width:100%;text-align:left;background:transparent;cursor:pointer;
+  font:inherit;color:#c5ccda;
+}
+.menu .logout-btn:hover{background:rgba(196,105,105,.13);color:#ffdada}
+.sidebar-note{
+  border:1px solid rgba(199,167,106,.2);border-radius:12px;
+  background:rgba(255,255,255,.035);padding:15px;
+  color:#aab3c3;font-size:9px;letter-spacing:1px;
+}
+.sidebar-note strong{color:#e3cfaa;font-size:10px}
+.main-area{background:transparent}
+.topbar{
+  height:82px;padding:0 42px;background:rgba(255,254,250,.88);
+  border-bottom:1px solid rgba(222,216,205,.8);
+  backdrop-filter:blur(16px);position:sticky;top:0;z-index:20;
+}
+.topbar strong{font-size:12px;letter-spacing:.01em;color:#29354a}
+.top-kicker,.eyebrow{color:#a48b60;letter-spacing:1.8px;font-size:8px}
+.user-chip{gap:11px;color:#344057}
+.avatar{
+  width:38px;height:38px;border:1px solid #e8dcc5;
+  background:linear-gradient(145deg,#f5eddf,#e9ddc7);color:#8d7043;
+}
+.user-chip small{color:#92908b}
+.content{padding:34px 42px 42px;max-width:1700px;width:100%;margin:0 auto}
+.page-heading{margin-bottom:25px}
+.page-heading h1{font-size:29px;letter-spacing:-.8px;font-weight:750;color:#1c2a42;margin:7px 0}
+.page-heading p{font-size:12px;color:#858783;line-height:1.65}
+.page-heading:after{content:"";display:none}
+footer{background:rgba(255,254,250,.58);border-color:#e9e3d9;color:#a09b91;letter-spacing:.25px}
+
+/* Surfaces and cards */
+.card,.empty-panel,.report-kpi,.dashboard-kpi{
+  background:var(--surface);border:1px solid #ebe5da;
+  border-radius:16px;box-shadow:var(--shadow-soft);
+}
+.card{padding:23px;margin-bottom:19px}
+.card h2{font-size:16px;color:#26344b;letter-spacing:-.2px}
+.card>p,.card p{color:#858783;font-size:11px;line-height:1.65}
+.section-heading h2{font-size:16px;color:#26344b}
+.section-heading p{color:#8b8b85}
+.btn{
+  border-radius:9px;padding:11px 16px;font-size:11px;font-weight:750;
+  letter-spacing:.12px;transition:all .2s ease;
+}
+.btn-primary{
+  color:#fff;background:linear-gradient(115deg,#293d61,#405a83);
+  border:1px solid #344b70;box-shadow:0 5px 13px rgba(40,59,91,.13);
+}
+.btn-primary:hover{background:linear-gradient(115deg,#1f304e,#354d75);transform:translateY(-1px);box-shadow:0 8px 18px rgba(40,59,91,.18)}
+.btn-outline,.btn-light{
+  background:#fffefa;border:1px solid #e4ddcf;color:#596174;
+}
+.btn-outline:hover,.btn-light:hover{border-color:#c7a76a;color:#8b7044;background:#fcf8ef}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(199,167,106,.28);outline-offset:2px}
+
+/* Forms */
+.form-group label,.incident-form label{color:#5c6471;font-size:10px;font-weight:750;letter-spacing:.15px}
+.form-group input,.form-group select,.incident-form textarea,
+.incident-status-form select,.login-card input[type=text],.login-card input[type=password]{
+  border:1px solid #e4ded3;border-radius:9px;background:#fffefa;color:#293449;
+  transition:border-color .2s,box-shadow .2s;
+}
+.form-group input:focus,.form-group select:focus,.incident-form textarea:focus,
+.incident-status-form select:focus,.login-card input:focus{
+  border-color:#c7a76a;box-shadow:0 0 0 3px rgba(199,167,106,.12);outline:none;
+}
+input,select,textarea{accent-color:#9b7c48}
+
+/* Tables */
+.data-table{border-collapse:separate;border-spacing:0;font-size:11px}
+.data-table th{
+  background:#f5f1e9;color:#77766f;font-size:9px;letter-spacing:.65px;
+  padding:14px 13px;border-top:1px solid #eee8dd;border-bottom:1px solid #e9e2d6;
+}
+.data-table th:first-child{border-radius:9px 0 0 0}
+.data-table th:last-child{border-radius:0 9px 0 0}
+.data-table td{padding:14px 13px;border-bottom:1px solid #f0ece5;color:#465064}
+.data-table tbody tr{transition:background .16s ease}
+.data-table tbody tr:hover{background:#fcfaf5}
+.status-badge,.priority-pill,.incident-status,.dashboard-status{letter-spacing:.1px}
+.status-approved,.dashboard-status-approved{background:#edf4ed;color:#557d5b}
+.status-pending,.dashboard-status-pending{background:#f8f0df;color:#98743d}
+.status-other,.dashboard-status-neutral{background:#f4eaea;color:#a15f5b}
+.empty-state{color:#898a85}
+.empty-state h3{color:#344057}
+
+/* Dashboard */
+.dashboard-welcome{
+  background:radial-gradient(circle at 88% 20%,rgba(199,167,106,.23),transparent 26%),linear-gradient(115deg,#17243d,#263d5e);
+  border:1px solid rgba(199,167,106,.28);border-radius:18px;
+  box-shadow:0 14px 32px rgba(26,39,62,.14);
+}
+.dashboard-eyebrow{color:#d4bd8d}
+.dashboard-date{border-color:rgba(221,197,150,.32);background:rgba(255,255,255,.07)}
+.dashboard-kpi,.dashboard-shortcut{
+  background:var(--surface);border:1px solid #ebe5da;border-radius:15px;
+  box-shadow:var(--shadow-soft);
+}
+.dashboard-kpi{padding:19px}
+.dashboard-kpi>div:last-child>span{color:#8d8a81}
+.dashboard-kpi>div:last-child>strong{color:#26364f}
+.dashboard-shortcut:hover{border-color:#d8c49e;box-shadow:var(--shadow-hover)}
+.shortcut-symbol{background:#f3eee4;color:#947746}
+.dashboard-text-link{color:#927446}
+.dashboard-panel .section-heading h2{color:#27364e}
+.dashboard-list-date{background:#f3eee4}
+.dashboard-list-date strong{color:#8b7045}
+.dashboard-admin-note{background:#f4efe5;border:1px solid #e7dbc4}
+.dashboard-admin-note strong{color:#6e5735}
+.dashboard-admin-note small{color:#898071}
+
+/* Reports and incident details */
+.report-kpi{border-radius:15px}
+.report-kpi-label{color:#92866f}
+.report-kpi>strong{color:#27364e}
+.incident-report-card{border-top:3px solid #c7a76a}
+.incident-total{background:#f3eee4;color:#8d7043}
+.priority-low{background:#edf1f4;color:#64798b}
+.priority-medium{background:#f8f0df;color:#98743d}
+.priority-high{background:#f4e8e5;color:#a45e53}
+.incident-open{background:#edf1f4;color:#64798b}
+.incident-in_progress{background:#f8f0df;color:#98743d}
+.incident-resolved{background:#edf4ed;color:#557d5b}
+.alert-success{background:#edf4ed;color:#557d5b;border-color:#dce8dc}
+.alert-error{background:#f8ecea;color:#a45e53;border-color:#efdbd7}
+
+/* Login */
+.login-body{
+  background:radial-gradient(ellipse at 80% 12%,rgba(199,167,106,.2),transparent 30%),
+             linear-gradient(135deg,#f1eee7,#faf9f5);
+}
+.login-card{
+  background:rgba(255,254,250,.96);border:1px solid #e8dfd0;border-radius:20px;
+  box-shadow:0 24px 70px rgba(38,43,52,.11);padding:42px;
+}
+.login-brand .brand-mark{background:linear-gradient(145deg,#e4cf9e,#b48f52)}
+.login-card h1{color:#1e2d46;letter-spacing:-.7px}
+.login-card input[type=text],.login-card input[type=password]{height:45px;padding:0 13px}
+.login-options a{color:#927446}
+
+/* Profile and forms using inline legacy styles */
+.content input:not([type=checkbox]):not([type=radio]),
+.content select,.content textarea{
+  border:1px solid #e4ded3;border-radius:9px;background:#fffefa;color:#293449;
+}
+.content input:focus,.content select:focus,.content textarea:focus{
+  outline:none;border-color:#c7a76a;box-shadow:0 0 0 3px rgba(199,167,106,.11);
+}
+.content label{font-size:11px;color:#596174}
+.content small{color:#858783}
+.content table:not(.data-table){width:100%;border-collapse:collapse;font-size:11px}
+.content table:not(.data-table) th{background:#f5f1e9;color:#77766f;text-align:left;padding:13px;border-bottom:1px solid #e9e2d6}
+.content table:not(.data-table) td{padding:13px;border-bottom:1px solid #f0ece5;color:#465064}
+.content table:not(.data-table) tbody tr:hover{background:#fcfaf5}
+
+/* Responsive polish */
+@media(max-width:1100px){
+  .content{padding:28px 25px}
+  .topbar{padding:0 25px}
+}
+@media(max-width:850px){
+  .sidebar{width:230px}
+}
+@media(max-width:650px){
+  .sidebar{width:100%;padding:14px 13px;background:linear-gradient(100deg,#17243d,#263d5e)}
+  .brand{padding:0 8px 13px}
+  .menu{gap:4px}
+  .menu a,.menu .logout-btn{padding:10px 9px;font-size:11px}
+  .topbar{position:relative;padding:14px 17px}
+  .content{padding:20px 15px 28px}
+  .page-heading h1{font-size:23px}
+  .card{padding:17px;border-radius:13px}
+  .login-card{padding:30px 24px}
+}
