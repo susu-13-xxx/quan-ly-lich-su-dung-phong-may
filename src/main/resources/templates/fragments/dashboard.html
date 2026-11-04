@@ -95,7 +95,11 @@
                     </div>
                     <span class="dashboard-status"
                           th:classappend="${incident.status == 'RESOLVED' ? ' dashboard-status-approved' : ' dashboard-status-pending'}"
-                          th:switch="${incident.status}">Mới</span>
+                          th:switch="${incident.status}">
+                        <span th:case="'RESOLVED'">Đã xử lý</span>
+                        <span th:case="'IN_PROGRESS'">Đang xử lý</span>
+                        <span th:case="*">Mới</span>
+                    </span>
                 </div>
             </div>
         </section>
@@ -118,7 +122,12 @@
                         <td>
                             <span class="dashboard-status"
                                   th:classappend="${booking.status == 'APPROVED' ? ' dashboard-status-approved' : (booking.status == 'PENDING' ? ' dashboard-status-pending' : ' dashboard-status-neutral')}"
-                                  th:text="${booking.status == 'APPROVED'} ? 'Đã duyệt' : (${booking.status == 'PENDING'} ? 'Chờ duyệt' : (${booking.status == 'REJECTED'} ? 'Từ chối' : 'Đã hủy'))">Chờ duyệt</span>
+                                  th:switch="${booking.status}">
+                                <span th:case="'APPROVED'">Đã duyệt</span>
+                                <span th:case="'PENDING'">Chờ duyệt</span>
+                                <span th:case="'REJECTED'">Từ chối</span>
+                                <span th:case="*">Đã hủy</span>
+                            </span>
                         </td>
                     </tr>
                 </tbody>
