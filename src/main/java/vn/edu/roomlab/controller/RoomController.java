@@ -1,6 +1,6 @@
-
 package vn.edu.roomlab.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.roomlab.entity.Room;
 import vn.edu.roomlab.service.RoomService;
@@ -29,11 +29,13 @@ public class RoomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public Room create(@RequestBody Room room) {
         return roomService.saveRoom(room);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public Room update(@PathVariable Integer id,
                        @RequestBody Room room) {
         room.setRoomId(id);
@@ -41,6 +43,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Integer id) {
         roomService.deleteRoom(id);
     }
