@@ -1,4 +1,3 @@
-
 package vn.edu.roomlab.controller;
 
 import java.security.Principal;
@@ -42,15 +41,15 @@ public class MyBookingController {
                 bookingService.getMyBookings(user.getUserId())
         );
 
+        model.addAttribute("currentUser", user);
         model.addAttribute("pageTitle", "Lịch sử đặt phòng");
         model.addAttribute(
                 "pageDescription",
                 "Theo dõi các yêu cầu đặt phòng của bạn."
         );
-
         model.addAttribute("activePage", "myBookings");
-        model.addAttribute("currentUser", user);
+        model.addAttribute("content", "fragments/my-bookings");
 
-        return "my-bookings";
+        return "layout";
     }
 }
