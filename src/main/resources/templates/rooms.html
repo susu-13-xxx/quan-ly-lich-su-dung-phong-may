@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách phòng | RoomLab</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}">
+            <span class="brand-mark">RL</span>
+            <span>RoomLab</span>
+        </a>
+
+        <div class="nav-caption">MENU CHÍNH</div>
+
+        <nav class="menu">
+            <a th:href="@{/dashboard}">▦ Tổng quan</a>
+            <a th:href="@{/timetable}">▦ Lịch biểu tổng quan</a>
+            <a th:href="@{/bookings/new}">＋ Đặt phòng máy</a>
+            <a th:href="@{/bookings/mine}">◷ Lịch sử đặt phòng</a>
+
+            <div class="nav-caption admin-caption">QUẢN TRỊ</div>
+            <a th:href="@{/admin/approvals}">✓ Duyệt lịch đặt</a>
+            <a class="active" th:href="@{/rooms}">▣ Danh sách phòng</a>
+            <a th:href="@{/admin/users}">♙ Người dùng & phân quyền</a>
+            <a th:href="@{/admin/reports}">▤ Báo cáo hiệu suất</a>
+            <a th:href="@{/incidents}">⚠ Sự cố / Báo hỏng</a>
+
+            <div class="nav-caption admin-caption">TÀI KHOẢN</div>
+            <a th:href="@{/profile}">⚙ Thông tin cá nhân</a>
+            <a th:href="@{/login}">⇥ Đăng xuất</a>
+        </nav>
+
+        <div class="sidebar-note">
+            HỆ THỐNG QUẢN LÝ<br>
+            <strong>LỊCH SỬ DỤNG PHÒNG MÁY</strong>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div>
+                <span class="top-kicker">ROOM LAB MANAGER</span>
+                <strong>Hệ thống quản lý lịch sử dụng phòng máy</strong>
+            </div>
+            <div class="user-chip">
+                <span class="avatar">U</span>
+                <span>Người dùng demo<br>
+                    <small>Vai trò: Chưa đăng nhập</small>
+                </span>
+            </div>
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">QUẢN LÝ PHÒNG MÁY</div>
+                    <h1>Danh sách phòng</h1>
+                    <p>Xem thông tin và tình trạng hoạt động của các phòng máy.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/dashboard}">
+                    ← Về tổng quan
+                </a>
+            </div>
+
+            <div class="empty-panel" style="padding: 24px;">
+
+                <h2>Danh sách phòng máy</h2>
+                <p>Thông tin các phòng hiện có trong hệ thống.</p>
+
+                <div style="overflow-x: auto; margin-top: 20px;">
+
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                        <tr>
+                            <th style="padding: 12px;">Mã phòng</th>
+                            <th style="padding: 12px;">Tên phòng</th>
+                            <th style="padding: 12px;">Vị trí</th>
+                            <th style="padding: 12px;">Sức chứa</th>
+                            <th style="padding: 12px;">Trạng thái</th>
+                            <th style="padding: 12px;">Chi tiết</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="room : ${rooms}">
+                            <td th:text="${room.roomId}" style="padding: 12px;"></td>
+
+                            <td th:text="${room.roomName}" style="padding: 12px;"></td>
+
+                            <td th:text="${room.location}" style="padding: 12px;"></td>
+
+                            <td style="padding: 12px;">
+                                <span th:text="${room.capacity}"></span> chỗ
+                            </td>
+
+                            <td style="padding: 12px;">
+                                <span th:text="${room.status}"></span>
+                            </td>
+
+                            <td style="padding: 12px;">
+                                <a th:href="@{/rooms/{id}(id=${room.roomId})}"
+                                   class="btn btn-outline">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(rooms)}">
+                            <td colspan="6" style="padding: 20px; text-align: center;">
+                                Chưa có phòng máy nào trong hệ thống.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </section>
+
+        <footer>
+            © 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy
+        </footer>
+
+    </main>
+</div>
+</body>
+</html>

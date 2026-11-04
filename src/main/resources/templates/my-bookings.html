@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử đặt phòng | RoomLab</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .booking-table th,
+        .booking-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .booking-table th {
+            background: #f4f6fa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-message {
+            padding: 35px;
+            text-align: center;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}">
+            <span class="brand-mark">RL</span>
+            <span>RoomLab</span>
+        </a>
+
+        <div class="nav-caption">MENU CHÍNH</div>
+
+        <nav class="menu">
+            <a th:href="@{/dashboard}">▦ Tổng quan</a>
+            <a th:href="@{/timetable}">▦ Lịch biểu tổng quan</a>
+            <a th:href="@{/bookings/new}">＋ Đặt phòng máy</a>
+            <a th:href="@{/bookings/mine}" class="active">
+                ◷ Lịch sử đặt phòng
+            </a>
+
+            <div class="nav-caption admin-caption">QUẢN TRỊ</div>
+            <a th:href="@{/admin/bookings}">✓ Duyệt lịch đặt</a>
+            <a th:href="@{/rooms}">▣ Phòng máy & thiết bị</a>
+            <a th:href="@{/admin/users}">♙ Người dùng & phân quyền</a>
+            <a th:href="@{/admin/reports}">▤ Báo cáo hiệu suất</a>
+            <a th:href="@{/incidents}">⚠ Sự cố / Báo hỏng</a>
+
+            <div class="nav-caption admin-caption">TÀI KHOẢN</div>
+            <a th:href="@{/profile}">⚙ Thông tin cá nhân</a>
+            <a th:href="@{/login}">⇥ Đăng xuất</a>
+        </nav>
+
+        <div class="sidebar-note">
+            HỆ THỐNG QUẢN LÝ<br>
+            <strong>LỊCH SỬ DỤNG PHÒNG MÁY</strong>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div>
+                <span class="top-kicker">ROOM LAB MANAGER</span>
+                <strong>Hệ thống quản lý lịch sử dụng phòng máy</strong>
+            </div>
+
+            <div class="user-chip">
+                <span class="avatar">U</span>
+                <span>
+                    <span th:text="${currentUser.fullName}">Người dùng</span>
+                    <br>
+                    <small>Vai trò:
+                        <span th:text="${currentUser.role.roleName}">Người dùng</span>
+                    </small>
+                </span>
+            </div>
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">KHÔNG GIAN LÀM VIỆC</div>
+                    <h1 th:text="${pageTitle}">Lịch sử đặt phòng</h1>
+                    <p th:text="${pageDescription}"></p>
+                </div>
+
+                <a class="btn btn-primary" th:href="@{/bookings/new}">
+                    ＋ Đặt phòng mới
+                </a>
+            </div>
+
+            <div class="table-wrapper"
+                 th:if="${bookings != null and !bookings.isEmpty()}">
+
+                <table class="booking-table">
+                    <thead>
+                    <tr>
+                        <th>Mã yêu cầu</th>
+                        <th>Phòng</th>
+                        <th>Ngày đặt</th>
+                        <th>Giờ bắt đầu</th>
+                        <th>Giờ kết thúc</th>
+                        <th>Mục đích</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${booking.bookingId}"></td>
+                        <td th:text="${booking.roomId != null
+                            ? 'Phòng #' + booking.roomId : 'N/A'}"></td>
+                        <td th:text="${booking.bookingDate}"></td>
+                        <td th:text="${booking.startTime}"></td>
+                        <td th:text="${booking.endTime}"></td>
+                        <td th:text="${booking.purpose != null
+                            ? booking.purpose : 'Không có'}"></td>
+                        <td>
+                            <span class="status"
+                                  th:classappend="${booking.status == 'PENDING'
+                                      ? ' pending'
+                                      : (booking.status == 'APPROVED'
+                                          ? ' approved' : ' rejected')}"
+                                  th:text="${booking.status == 'PENDING'
+                                      ? 'Chờ duyệt'
+                                      : (booking.status == 'APPROVED'
+                                          ? 'Đã duyệt' : 'Đã từ chối')}">
+                            </span>
+                        </td>
+                        <td th:text="${booking.createdAt != null
+                            ? #temporals.format(booking.createdAt,
+                                'dd/MM/yyyy HH:mm')
+                            : 'N/A'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-message"
+                 th:if="${bookings == null or bookings.isEmpty()}">
+                <h2>Chưa có lịch sử đặt phòng</h2>
+                <p>Cậu chưa gửi yêu cầu đặt phòng nào.</p>
+                <a class="btn btn-primary" th:href="@{/bookings/new}">
+                    Tạo yêu cầu đặt phòng
+                </a>
+            </div>
+
+        </section>
+
+        <footer>
+            © 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -3,20 +3,43 @@ package vn.edu.roomlab.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import vn.edu.roomlab.entity.Incident;
-import vn.edu.roomlab.repository.IncidentRepository;
+import vn.edu.roomlab.dto.IncidentRequest;
 import vn.edu.roomlab.dto.IncidentResponse;
+import vn.edu.roomlab.entity.Equipment;
+import vn.edu.roomlab.entity.Incident;
+import vn.edu.roomlab.entity.Room;
+import vn.edu.roomlab.entity.User;
+import vn.edu.roomlab.repository.EquipmentRepository;
+import vn.edu.roomlab.repository.IncidentRepository;
+import vn.edu.roomlab.repository.RoomRepository;
+import vn.edu.roomlab.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
 public class IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+    private final EquipmentRepository equipmentRepository;
 
-    public IncidentService(IncidentRepository incidentRepository) {
+    private static final Set<String> VALID_STATUSES =
+            Set.of("OPEN", "IN_PROGRESS", "RESOLVED");
+
+    public IncidentService(
+            IncidentRepository incidentRepository,
+            UserRepository userRepository,
+            RoomRepository roomRepository,
+            EquipmentRepository equipmentRepository
+    ) {
         this.incidentRepository = incidentRepository;
+        this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
+        this.equipmentRepository = equipmentRepository;
     }
 
     public List<IncidentResponse> getAllIncidents() {
@@ -27,24 +50,138 @@ public class IncidentService {
     }
 
     public IncidentResponse getIncidentById(Integer id) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
-                        "Không tìm thấy sự cố có ID: " + id));
-
+        Incident incident = findIncident(id);
         return IncidentResponse.from(incident);
     }
 
-    public IncidentResponse saveIncident(Incident incident) {
+    // Tạo sự cố mới
+    public IncidentResponse createIncident(
+            IncidentRequest request,
+            String username
+    ) {
+        validateRequest(request);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy tài khoản"));
+
+        Room room = roomRepository.findById(request.roomId())
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy phòng máy"));
+
+        Equipment equipment = findEquipment(request.equipmentId());
+
+
+        if (equipment != null
+                && !equipment.getRoom().getRoomId().equals(room.getRoomId())) {
+            throw new RuntimeException(
+                    "Thiết bị không thuộc phòng máy đã chọn");
+        }
+
+        Incident incident = new Incident();
+
+        incident.setUser(user);
+        incident.setRoom(room);
+        incident.setEquipment(equipment);
+        incident.setTitle(request.title().trim());
+        incident.setDescription(request.description());
+        incident.setPriority(request.priority());
+        incident.setStatus("OPEN");
+        incident.setReportedAt(LocalDateTime.now());
+        incident.setResolvedAt(null);
+
+        return IncidentResponse.from(
+                incidentRepository.save(incident)
+        );
+    }
+
+    // Cập nhật thông tin và trạng thái sự cố
+    public IncidentResponse updateIncident(
+            Integer id,
+            IncidentRequest request
+    ) {
+        Incident incident = findIncident(id);
+
+        validateRequest(request);
+
+        Room room = roomRepository.findById(request.roomId())
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy phòng máy"));
+
+        Equipment equipment = findEquipment(request.equipmentId());
+
+        if (equipment != null
+                && !equipment.getRoom().getRoomId().equals(room.getRoomId())) {
+            throw new RuntimeException(
+                    "Thiết bị không thuộc phòng máy đã chọn");
+        }
+
+        if (request.status() == null
+                || !VALID_STATUSES.contains(request.status())) {
+            throw new RuntimeException("Trạng thái sự cố không hợp lệ");
+        }
+
+        incident.setRoom(room);
+        incident.setEquipment(equipment);
+        incident.setTitle(request.title().trim());
+        incident.setDescription(request.description());
+        incident.setPriority(request.priority());
+        incident.setStatus(request.status());
+
+        if ("RESOLVED".equals(request.status())) {
+            if (incident.getResolvedAt() == null) {
+                incident.setResolvedAt(LocalDateTime.now());
+            }
+        } else {
+            incident.setResolvedAt(null);
+        }
+
         return IncidentResponse.from(
                 incidentRepository.save(incident)
         );
     }
 
     public void deleteIncident(Integer id) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
-                        "Không tìm thấy sự cố có ID: " + id));
-
+        Incident incident = findIncident(id);
         incidentRepository.delete(incident);
+    }
+
+    private Incident findIncident(Integer id) {
+        return incidentRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Không tìm thấy sự cố có ID: " + id));
+    }
+
+    private Equipment findEquipment(Integer equipmentId) {
+        if (equipmentId == null) {
+            return null;
+        }
+
+        return equipmentRepository.findById(equipmentId)
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy thiết bị"));
+    }
+
+    private void validateRequest(IncidentRequest request) {
+        if (request == null) {
+            throw new RuntimeException("Dữ liệu sự cố không hợp lệ");
+        }
+
+        if (request.roomId() == null) {
+            throw new RuntimeException("Vui lòng chọn phòng máy");
+        }
+
+        if (request.title() == null || request.title().isBlank()) {
+            throw new RuntimeException("Vui lòng nhập tiêu đề sự cố");
+        }
+
+        if (request.priority() == null || request.priority().isBlank()) {
+            throw new RuntimeException("Vui lòng chọn mức độ ưu tiên");
+        }
+
+        if (!Set.of("LOW", "MEDIUM", "HIGH")
+                .contains(request.priority())) {
+            throw new RuntimeException("Mức độ ưu tiên không hợp lệ");
+        }
     }
 }

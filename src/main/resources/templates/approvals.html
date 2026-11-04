@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Duyệt yêu cầu đặt phòng | RoomLab</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .approval-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .approval-header {
+            margin-bottom: 25px;
+        }
+
+        .approval-header h1 {
+            color: #243b53;
+            margin-bottom: 8px;
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .approval-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .approval-table th,
+        .approval-table td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .approval-table th {
+            background: #243b53;
+            color: white;
+        }
+
+        .approval-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-buttons form {
+            margin: 0;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-approve {
+            background: #198754;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .approval-container {
+                overflow-x: auto;
+            }
+
+            .approval-table {
+                min-width: 950px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="approval-container">
+
+    <div class="approval-header">
+        <h1>Duyệt yêu cầu đặt phòng</h1>
+        <p>Quản lý và xử lý các yêu cầu đặt phòng máy.</p>
+    </div>
+
+    <!-- Thông báo thành công -->
+    <div th:if="${successMessage}"
+         class="message success"
+         th:text="${successMessage}">
+    </div>
+
+    <!-- Thông báo lỗi -->
+    <div th:if="${errorMessage}"
+         class="message error"
+         th:text="${errorMessage}">
+    </div>
+
+    <!-- Danh sách yêu cầu -->
+    <div th:if="${not #lists.isEmpty(bookings)}">
+
+        <table class="approval-table">
+
+            <thead>
+                <tr>
+                    <th>Mã yêu cầu</th>
+                    <th>Mã giáo viên</th>
+                    <th>Mã phòng</th>
+                    <th>Ngày đặt</th>
+                    <th>Giờ bắt đầu</th>
+                    <th>Giờ kết thúc</th>
+                    <th>Mục đích</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="booking : ${bookings}">
+
+                    <td th:text="${booking.bookingId}"></td>
+
+                    <td th:text="${booking.userId}"></td>
+
+                    <td th:text="${booking.roomId}"></td>
+
+                    <td th:text="${#temporals.format(
+                        booking.bookingDate, 'dd/MM/yyyy')}">
+                    </td>
+
+                    <td th:text="${booking.startTime}"></td>
+
+                    <td th:text="${booking.endTime}"></td>
+
+                    <td th:text="${booking.purpose}"></td>
+
+                    <td>
+                        <div class="action-buttons">
+
+                            <!-- Nút duyệt -->
+                            <form th:action="@{/admin/bookings/{id}/approve(
+                                id=${booking.bookingId})}"
+                                  method="post">
+
+                                <button type="submit"
+                                        class="btn btn-approve"
+                                        onclick="return confirm(
+                                            'Cậu chắc chắn muốn duyệt yêu cầu này?')">
+                                    Duyệt
+                                </button>
+
+                            </form>
+
+                            <!-- Nút từ chối -->
+                            <form th:action="@{/admin/bookings/{id}/reject(
+                                id=${booking.bookingId})}"
+                                  method="post">
+
+                                <button type="submit"
+                                        class="btn btn-reject"
+                                        onclick="return confirm(
+                                            'Cậu chắc chắn muốn từ chối yêu cầu này?')">
+                                    Từ chối
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Không có yêu cầu -->
+    <div th:if="${#lists.isEmpty(bookings)}"
+         class="empty-message">
+
+        <h3>Hiện chưa có yêu cầu nào cần duyệt!</h3>
+
+        <p>Các yêu cầu đặt phòng mới sẽ xuất hiện tại đây.</p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<div th:fragment="content">
+
+    <div class="card">
+        <h2>Danh sách người dùng</h2>
+        <p>Quản lý tài khoản và vai trò truy cập hệ thống.</p>
+
+        <div th:if="${#lists.isEmpty(users)}">
+            <p>Hiện chưa có người dùng nào.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(users)}"
+             style="overflow-x: auto;">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.userId}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.roleName}"></td>
+                        <td th:text="${user.status}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>

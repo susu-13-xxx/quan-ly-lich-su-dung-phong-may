@@ -1,0 +1,45 @@
+<div th:fragment="content">
+
+    <div class="card">
+        <h2>Quản lý sự cố / Báo hỏng</h2>
+        <p>Danh sách sự cố thiết bị và phòng máy được ghi nhận.</p>
+
+        <div th:if="${#lists.isEmpty(incidents)}">
+            <p>Hiện chưa có sự cố nào được ghi nhận.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(incidents)}"
+             style="overflow-x: auto;">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã sự cố</th>
+                        <th>Người báo cáo</th>
+                        <th>Phòng máy</th>
+                        <th>Thiết bị</th>
+                        <th>Tiêu đề</th>
+                        <th>Mức độ</th>
+                        <th>Trạng thái</th>
+                        <th>Thời gian báo</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="incident : ${incidents}">
+                        <td th:text="${incident.incidentId}"></td>
+                        <td th:text="${incident.userId}"></td>
+                        <td th:text="${incident.roomId}"></td>
+                        <td th:text="${incident.equipmentId != null ? incident.equipmentId : 'Không có'}"></td>
+                        <td th:text="${incident.title}"></td>
+                        <td th:text="${incident.priority}"></td>
+                        <td th:text="${incident.status}"></td>
+                        <td th:text="${incident.reportedAt != null ? #temporals.format(incident.reportedAt, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>

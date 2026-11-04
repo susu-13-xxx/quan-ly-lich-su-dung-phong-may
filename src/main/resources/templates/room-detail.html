@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết phòng | RoomLab</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}">
+            <span class="brand-mark">RL</span>
+            <span>RoomLab</span>
+        </a>
+
+        <div class="nav-caption">MENU CHÍNH</div>
+
+        <nav class="menu">
+            <a th:href="@{/dashboard}">▦ Tổng quan</a>
+            <a th:href="@{/timetable}">▦ Lịch biểu tổng quan</a>
+            <a th:href="@{/bookings/new}">＋ Đặt phòng máy</a>
+            <a th:href="@{/bookings/mine}">◷ Lịch sử đặt phòng</a>
+
+            <div class="nav-caption admin-caption">QUẢN TRỊ</div>
+            <a th:href="@{/admin/approvals}">✓ Duyệt lịch đặt</a>
+            <a class="active" th:href="@{/rooms}">▣ Danh sách phòng</a>
+            <a th:href="@{/admin/users}">♙ Người dùng & phân quyền</a>
+            <a th:href="@{/admin/reports}">▤ Báo cáo hiệu suất</a>
+            <a th:href="@{/incidents}">⚠ Sự cố / Báo hỏng</a>
+
+            <div class="nav-caption admin-caption">TÀI KHOẢN</div>
+            <a th:href="@{/profile}">⚙ Thông tin cá nhân</a>
+            <a th:href="@{/login}">⇥ Đăng xuất</a>
+        </nav>
+
+        <div class="sidebar-note">
+            HỆ THỐNG QUẢN LÝ<br>
+            <strong>LỊCH SỬ DỤNG PHÒNG MÁY</strong>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div>
+                <span class="top-kicker">ROOM LAB MANAGER</span>
+                <strong>Hệ thống quản lý lịch sử dụng phòng máy</strong>
+            </div>
+
+            <div class="user-chip">
+                <span class="avatar">U</span>
+                <span>Người dùng demo<br>
+                    <small>Vai trò: Chưa đăng nhập</small>
+                </span>
+            </div>
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">QUẢN LÝ PHÒNG MÁY</div>
+                    <h1>Chi tiết phòng</h1>
+                    <p>Thông tin chi tiết về phòng máy trong hệ thống.</p>
+                </div>
+
+                <a class="btn btn-light" th:href="@{/rooms}">
+                    ← Quay lại
+                </a>
+            </div>
+
+            <div class="empty-panel" style="padding: 30px;">
+
+                <h2 th:text="${room.roomName}">Tên phòng</h2>
+
+                <p>Thông tin cơ bản của phòng máy.</p>
+
+                <div style="margin-top: 25px;">
+
+                    <p>
+                        <strong>Mã phòng:</strong>
+                        <span th:text="${room.roomId}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Tên phòng:</strong>
+                        <span th:text="${room.roomName}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Vị trí:</strong>
+                        <span th:text="${room.location != null ? room.location : 'Chưa cập nhật'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Sức chứa:</strong>
+                        <span th:text="${room.capacity}"></span> chỗ ngồi
+                    </p>
+
+                    <p>
+                        <strong>Trạng thái:</strong>
+                        <span th:text="${room.status != null ? room.status : 'Chưa cập nhật'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Mô tả:</strong>
+                        <span th:text="${room.description != null ? room.description : 'Chưa có mô tả'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Ngày tạo:</strong>
+                        <span th:text="${room.createdAt != null ? #temporals.format(room.createdAt, 'dd/MM/yyyy HH:mm') : 'Chưa cập nhật'}"></span>
+                    </p>
+
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <a class="btn btn-primary" th:href="@{/rooms}">
+                        Quay lại danh sách phòng
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            © 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy
+        </footer>
+
+    </main>
+</div>
+
+</body>
+</html>

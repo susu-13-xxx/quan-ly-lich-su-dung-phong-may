@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt phòng máy | RoomLab</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/dashboard}">
+            <span class="brand-mark">RL</span>
+            <span>RoomLab</span>
+        </a>
+
+        <div class="nav-caption">MENU CHÍNH</div>
+
+        <nav class="menu">
+            <a th:href="@{/dashboard}">▦ Tổng quan</a>
+            <a th:href="@{/timetable}">▦ Lịch biểu tổng quan</a>
+            <a class="active" th:href="@{/bookings/new}">＋ Đặt phòng máy</a>
+            <a th:href="@{/bookings/mine}">◷ Lịch sử đặt phòng</a>
+
+            <div class="nav-caption admin-caption">QUẢN TRỊ</div>
+            <a th:href="@{/admin/approvals}">✓ Duyệt lịch đặt</a>
+            <a th:href="@{/rooms}">▣ Danh sách phòng</a>
+            <a th:href="@{/admin/users}">♙ Người dùng & phân quyền</a>
+            <a th:href="@{/admin/reports}">▤ Báo cáo hiệu suất</a>
+            <a th:href="@{/incidents}">⚠ Sự cố / Báo hỏng</a>
+
+            <div class="nav-caption admin-caption">TÀI KHOẢN</div>
+            <a th:href="@{/profile}">⚙ Thông tin cá nhân</a>
+            <a th:href="@{/logout}">⇥ Đăng xuất</a>
+        </nav>
+
+        <div class="sidebar-note">
+            HỆ THỐNG QUẢN LÝ<br>
+            <strong>LỊCH SỬ DỤNG PHÒNG MÁY</strong>
+        </div>
+    </aside>
+
+    <main class="main-area">
+
+        <header class="topbar">
+            <div>
+                <span class="top-kicker">ROOM LAB MANAGER</span>
+                <strong>Hệ thống quản lý lịch sử dụng phòng máy</strong>
+            </div>
+
+            <div class="user-chip">
+                <span class="avatar">U</span>
+                <span th:text="${username}">Người dùng</span>
+            </div>
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">QUẢN LÝ ĐẶT PHÒNG</div>
+                    <h1>Tạo yêu cầu đặt phòng</h1>
+                    <p>Điền thông tin bên dưới để gửi yêu cầu sử dụng phòng máy.</p>
+                </div>
+
+                <a class="btn btn-light" th:href="@{/rooms}">
+                    ← Danh sách phòng
+                </a>
+            </div>
+
+            <!-- Thông báo thành công -->
+            <div th:if="${successMessage}"
+                 class="empty-panel"
+                 style="padding: 15px; margin-bottom: 20px; border-left: 4px solid #16a34a;">
+                <strong style="color: #15803d;"
+                        th:text="${successMessage}"></strong>
+            </div>
+
+            <!-- Thông báo lỗi -->
+            <div th:if="${errorMessage}"
+                 class="empty-panel"
+                 style="padding: 15px; margin-bottom: 20px; border-left: 4px solid #dc2626;">
+                <strong style="color: #dc2626;"
+                        th:text="${errorMessage}"></strong>
+            </div>
+
+            <div class="empty-panel" style="padding: 30px;">
+
+                <h2>Thông tin yêu cầu</h2>
+                <p>Vui lòng kiểm tra thông tin trước khi gửi.</p>
+
+                <form th:action="@{/bookings/create}" method="post"
+                      style="margin-top: 25px;">
+
+                    <!-- Chọn phòng -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="roomId">
+                            <strong>Phòng máy *</strong>
+                        </label>
+
+                        <select id="roomId" name="roomId"
+                                required
+                                style="width: 100%; padding: 12px; margin-top: 8px;">
+
+                            <option value="">-- Chọn phòng máy --</option>
+
+                            <option th:each="room : ${rooms}"
+                                    th:if="${room.status == 'AVAILABLE' or room.roomId == selectedRoomId}"
+                                    th:value="${room.roomId}"
+                                    th:text="${room.roomName}"
+                                    th:selected="${room.roomId == selectedRoomId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Ngày đặt -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="bookingDate">
+                            <strong>Ngày sử dụng *</strong>
+                        </label>
+
+                        <input type="date"
+                               id="bookingDate"
+                               name="bookingDate"
+                               th:value="${bookingDate}"
+                               required
+                               style="width: 100%; padding: 12px; margin-top: 8px;">
+                    </div>
+
+                    <!-- Chọn tiết học -->
+                    <div style="margin-bottom: 25px;">
+
+                        <h3>Chọn tiết sử dụng phòng máy</h3>
+
+                        <p style="color: #64748b;">
+                            Chọn một hoặc nhiều tiết liên tiếp.
+                            Thời gian nghỉ giữa các tiết vẫn được giữ phòng.
+                        </p>
+
+                        <div id="scheduleMessage"
+                            style="margin: 12px 0; color: #64748b;">
+                            Vui lòng chọn phòng và ngày sử dụng.
+                        </div>
+
+                        <div id="scheduleGrid"
+                            style="display: grid;
+                                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                                gap: 10px;">
+                        </div>
+
+                        <div id="selectedSummary"
+                            style="margin-top: 15px; font-weight: 600;">
+                        </div>
+
+                        <!-- Giờ gửi về Controller -->
+                        <input type="hidden"
+                            id="startTime"
+                            name="startTime"
+                            th:value="${startTime}">
+
+                        <input type="hidden"
+                            id="endTime"
+                            name="endTime"
+                            th:value="${endTime}">
+
+                    </div>
+
+                    <!-- Mục đích -->
+                    <div style="margin-bottom: 25px;">
+                        <label for="purpose">
+                            <strong>Mục đích sử dụng</strong>
+                        </label>
+
+                        <textarea id="purpose"
+                                  name="purpose"
+                                  rows="4"
+                                  maxlength="255"
+                                  th:text="${purpose}"
+                                  placeholder="Ví dụ: Thực hành môn Lập trình Java..."
+                                  style="width: 100%; padding: 12px; margin-top: 8px; resize: vertical;">
+                        </textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button type="submit" class="btn btn-primary">
+                            Gửi yêu cầu đặt phòng
+                        </button>
+
+                        <a th:href="@{/dashboard}" class="btn btn-light">
+                            Hủy
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <footer>
+            © 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy
+        </footer>
+
+    </main>
+
+</div>
+
+<script>
+const periods = [
+    {n: 1, start: "06:45", end: "07:30", shift: "Sáng"},
+    {n: 2, start: "07:30", end: "08:15", shift: "Sáng"},
+    {n: 3, start: "08:25", end: "09:10", shift: "Sáng"},
+    {n: 4, start: "09:20", end: "10:05", shift: "Sáng"},
+    {n: 5, start: "10:15", end: "11:00", shift: "Sáng"},
+    {n: 6, start: "11:00", end: "11:45", shift: "Sáng"},
+
+    {n: 7, start: "12:30", end: "13:15", shift: "Chiều"},
+    {n: 8, start: "13:15", end: "14:00", shift: "Chiều"},
+    {n: 9, start: "14:10", end: "14:55", shift: "Chiều"},
+    {n: 10, start: "15:05", end: "15:50", shift: "Chiều"},
+    {n: 11, start: "16:00", end: "16:45", shift: "Chiều"},
+    {n: 12, start: "16:45", end: "17:30", shift: "Chiều"},
+
+    {n: 13, start: "17:45", end: "18:30", shift: "Tối"},
+    {n: 14, start: "18:30", end: "19:15", shift: "Tối"},
+    {n: 15, start: "19:15", end: "20:00", shift: "Tối"},
+    {n: 16, start: "20:00", end: "20:45", shift: "Tối"},
+    {n: 17, start: "20:45", end: "21:30", shift: "Tối"}
+];
+
+const roomSelect = document.getElementById("roomId");
+const dateInput = document.getElementById("bookingDate");
+
+const startInput = document.getElementById("startTime");
+const endInput = document.getElementById("endTime");
+
+const scheduleGrid = document.getElementById("scheduleGrid");
+const scheduleMessage = document.getElementById("scheduleMessage");
+const selectedSummary = document.getElementById("selectedSummary");
+
+let bookings = [];
+let selectedPeriods = [];
+
+function overlaps(start1, end1, start2, end2) {
+    return start1 < end2 && end1 > start2;
+}
+
+function getSelectedRange(selected) {
+    const sorted = [...selected].sort((a, b) => a - b);
+
+    if (sorted.length === 0) return null;
+
+    const first = periods[sorted[0] - 1];
+    const last = periods[sorted[sorted.length - 1] - 1];
+
+    return {
+        start: first.start,
+        end: last.end
+    };
+}
+
+function renderSchedule() {
+    scheduleGrid.innerHTML = "";
+
+    let currentShift = "";
+
+    periods.forEach(period => {
+
+        if (currentShift !== period.shift) {
+            currentShift = period.shift;
+
+            const heading = document.createElement("div");
+            heading.style.gridColumn = "1 / -1";
+            heading.style.fontWeight = "700";
+            heading.style.marginTop = "12px";
+            heading.textContent = "KÍP " + period.shift.toUpperCase();
+
+            scheduleGrid.appendChild(heading);
+        }
+
+        const conflict = bookings.find(booking =>
+            overlaps(
+                period.start,
+                period.end,
+                booking.startTime,
+                booking.endTime
+            )
+        );
+
+        const card = document.createElement("label");
+
+        card.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #dbe2ea;
+            cursor: pointer;
+        `;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = selectedPeriods.includes(period.n);
+        checkbox.disabled = !!conflict;
+
+        const info = document.createElement("span");
+
+        info.innerHTML = `
+            <strong>Tiết ${period.n}</strong><br>
+            <small>${period.start} – ${period.end}</small>
+        `;
+
+        const status = document.createElement("span");
+
+        if (conflict) {
+            status.textContent =
+                conflict.status === "APPROVED"
+                ? "Đã duyệt"
+                : "Chờ duyệt";
+
+            status.style.color =
+                conflict.status === "APPROVED"
+                ? "#dc2626"
+                : "#d97706";
+
+            card.style.background = "#fef2f2";
+            card.style.cursor = "not-allowed";
+
+        } else {
+            status.textContent = "Trống";
+            status.style.color = "#16a34a";
+            card.style.background = "#f0fdf4";
+        }
+
+        checkbox.addEventListener("change", () => {
+            togglePeriod(period.n, checkbox.checked);
+        });
+
+        card.appendChild(checkbox);
+        card.appendChild(info);
+        card.appendChild(status);
+
+        scheduleGrid.appendChild(card);
+    });
+}
+
+function togglePeriod(number, checked) {
+
+    let candidate = [...selectedPeriods];
+
+    if (checked) {
+        candidate.push(number);
+    } else {
+        candidate = candidate.filter(n => n !== number);
+    }
+
+    candidate.sort((a, b) => a - b);
+
+    // Chỉ cho phép chọn các tiết liên tiếp
+    for (let i = 1; i < candidate.length; i++) {
+        if (candidate[i] !== candidate[i - 1] + 1) {
+            alert("Vui lòng chọn các tiết liên tiếp!");
+            renderSchedule();
+            return;
+        }
+    }
+
+    const range = getSelectedRange(candidate);
+
+    // Kiểm tra cả khoảng nghỉ giữa các tiết
+    if (range && bookings.some(booking =>
+        overlaps(
+            range.start,
+            range.end,
+            booking.startTime,
+            booking.endTime
+        )
+    )) {
+        alert("Khoảng thời gian đã chọn bị trùng lịch!");
+        renderSchedule();
+        return;
+    }
+
+    selectedPeriods = candidate;
+
+    startInput.value = range ? range.start : "";
+    endInput.value = range ? range.end : "";
+
+    if (range) {
+        selectedSummary.textContent =
+            "Đã chọn " + candidate.length +
+            " tiết: " + range.start + " – " + range.end;
+    } else {
+        selectedSummary.textContent = "";
+    }
+
+    renderSchedule();
+}
+
+async function loadAvailability() {
+
+    selectedPeriods = [];
+    startInput.value = "";
+    endInput.value = "";
+    selectedSummary.textContent = "";
+    bookings = [];
+
+    const roomId = roomSelect.value;
+    const bookingDate = dateInput.value;
+
+    if (!roomId || !bookingDate) {
+        scheduleGrid.innerHTML = "";
+        scheduleMessage.textContent =
+            "Vui lòng chọn phòng và ngày sử dụng.";
+        return;
+    }
+
+    scheduleMessage.textContent = "Đang tải lịch phòng máy...";
+
+    try {
+        const params = new URLSearchParams({
+            roomId: roomId,
+            bookingDate: bookingDate
+        });
+
+        const response = await fetch(
+            "/bookings/availability?" + params.toString()
+        );
+
+        if (!response.ok) {
+            throw new Error("Không thể tải lịch phòng máy.");
+        }
+
+        bookings = await response.json();
+
+        scheduleMessage.textContent =
+            "Lịch sử dụng phòng máy trong ngày " + bookingDate;
+
+        renderSchedule();
+
+    } catch (error) {
+        scheduleMessage.textContent = error.message;
+        scheduleGrid.innerHTML = "";
+    }
+}
+
+roomSelect.addEventListener("change", loadAvailability);
+dateInput.addEventListener("change", loadAvailability);
+
+// Tải lịch khi mở biểu mẫu
+loadAvailability();
+
+// Không cho gửi khi chưa chọn tiết
+document.querySelector("form").addEventListener("submit", function(e) {
+
+    if (!startInput.value || !endInput.value) {
+        e.preventDefault();
+        alert("Vui lòng chọn ít nhất một tiết học!");
+    }
+});
+</script>
+
+</body>
+</html>

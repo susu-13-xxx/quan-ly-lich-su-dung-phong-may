@@ -1,16 +1,16 @@
 package vn.edu.roomlab.controller;
 
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import vn.edu.roomlab.entity.Incident;
-import vn.edu.roomlab.service.IncidentService;
+import vn.edu.roomlab.dto.IncidentRequest;
 import vn.edu.roomlab.dto.IncidentResponse;
-
-import java.util.List;
+import vn.edu.roomlab.service.IncidentService;
 
 @RestController
 @RequestMapping("/api/incidents")
-@CrossOrigin(origins = "*")
 public class IncidentController {
 
     private final IncidentService incidentService;
@@ -30,16 +30,22 @@ public class IncidentController {
     }
 
     @PostMapping
-    public IncidentResponse create(@RequestBody Incident incident) {
-        return incidentService.saveIncident(incident);
+    public IncidentResponse create(
+            @RequestBody IncidentRequest request,
+            Authentication authentication
+    ) {
+        return incidentService.createIncident(
+                request,
+                authentication.getName()
+        );
     }
 
     @PutMapping("/{id}")
     public IncidentResponse update(
             @PathVariable Integer id,
-            @RequestBody Incident incident) {
-        incident.setIncidentId(id);
-        return incidentService.saveIncident(incident);
+            @RequestBody IncidentRequest request
+    ) {
+        return incidentService.updateIncident(id, request);
     }
 
     @DeleteMapping("/{id}")

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.roomlab.entity.Room;
 import vn.edu.roomlab.repository.RoomRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,6 +30,9 @@ public class RoomService {
     }
 
     public Room saveRoom(Room room) {
+        if (room.getRoomId() == null && room.getCreatedAt() == null) {
+            room.setCreatedAt(LocalDateTime.now());
+        }
         return roomRepository.save(room);
     }
 
