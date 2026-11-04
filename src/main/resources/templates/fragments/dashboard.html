@@ -27,7 +27,7 @@
             <div class="dashboard-kpi-icon pending-icon">◷</div>
             <div><span th:text="${isAdmin} ? 'CHỜ DUYỆT' : 'LỊCH CHỜ XỬ LÝ'">CHỜ DUYỆT</span>
                 <strong th:text="${pendingBookings}">0</strong>
-                <small th:text="${isAdmin} ? 'Yêu cầu cần quản trị viên xem xét' : (${isSystemView} ? 'Yêu cầu chờ xử lý trong hệ thống' : 'Yêu cầu đặt phòng của bạn')">Yêu cầu cần xử lý</small></div>
+                <small th:text="${isAdmin ? 'Yêu cầu cần quản trị viên xem xét' : (isSystemView ? 'Yêu cầu chờ xử lý trong hệ thống' : 'Yêu cầu đặt phòng của bạn')}">Yêu cầu cần xử lý</small></div>
         </article>
         <article class="dashboard-kpi">
             <div class="dashboard-kpi-icon incidents-icon">⚠</div>
