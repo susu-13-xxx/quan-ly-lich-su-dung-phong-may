@@ -6,13 +6,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import vn.edu.roomlab.entity.Booking;
 
 public interface BookingRepository
-        extends JpaRepository<Booking, Integer> {
+        extends JpaRepository<Booking, Integer>, JpaSpecificationExecutor<Booking> {
 
     // Lấy danh sách đặt phòng của một người dùng
     List<Booking> findByUser_UserIdOrderByCreatedAtDesc(
@@ -67,20 +68,4 @@ public interface BookingRepository
             List<String> statuses
     );
 
-    // Lọc lịch biểu theo ngày, phòng và trạng thái.
-    @Query("""
-        SELECT b
-        FROM Booking b
-        JOIN FETCH b.room
-        JOIN FETCH b.user
-        WHERE (:bookingDate IS NULL OR b.bookingDate = :bookingDate)
-          AND (:roomId IS NULL OR b.room.roomId = :roomId)
-          AND (:status IS NULL OR b.status = :status)
-        ORDER BY b.bookingDate ASC, b.startTime ASC
-    """)
-    List<Booking> findForTimetable(
-            @Param("bookingDate") LocalDate bookingDate,
-            @Param("roomId") Integer roomId,
-            @Param("status") String status
-    );
 }
