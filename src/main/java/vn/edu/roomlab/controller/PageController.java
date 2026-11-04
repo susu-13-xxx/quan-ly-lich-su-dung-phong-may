@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 import vn.edu.roomlab.dto.IncidentRequest;
 import vn.edu.roomlab.service.EquipmentService;
@@ -23,6 +24,7 @@ import vn.edu.roomlab.service.IncidentService;
 import vn.edu.roomlab.service.BookingService;
 import vn.edu.roomlab.service.RoomService;
 import vn.edu.roomlab.service.ReportService;
+import vn.edu.roomlab.service.DashboardService;
 
 @Controller
 public class PageController {
@@ -34,6 +36,7 @@ public class PageController {
     private final RoomService roomService;
     private final ReportService reportService;
     private final EquipmentService equipmentService;
+    private final DashboardService dashboardService;
 
     public PageController(
             UserService userService,
@@ -42,7 +45,8 @@ public class PageController {
             BookingService bookingService,
             RoomService roomService,
             ReportService reportService,
-            EquipmentService equipmentService
+            EquipmentService equipmentService,
+            DashboardService dashboardService
     ) {
         this.userService = userService;
         this.roleService = roleService;
@@ -51,6 +55,7 @@ public class PageController {
         this.roomService = roomService;
         this.reportService = reportService;
         this.equipmentService = equipmentService;
+        this.dashboardService = dashboardService;
     }
 
     private String page(
@@ -91,11 +96,21 @@ public class PageController {
 
     // TỔNG QUAN
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(Authentication authentication, Model model) {
+        boolean admin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
+        boolean technician = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_TECHNICIAN"::equals);
+
+        model.addAllAttributes(dashboardService.buildDashboard(
+                authentication.getName(), admin, technician));
+
         return page(
                 model,
                 "Tổng quan",
-                "Tổng quan nhanh về hoạt động sử dụng phòng máy.",
+                "Theo dõi nhanh lịch đặt, tình trạng phòng máy và các sự cố.",
                 "dashboard",
                 "fragments/dashboard"
         );
