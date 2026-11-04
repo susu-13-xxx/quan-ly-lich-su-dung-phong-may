@@ -111,9 +111,10 @@ public class PageController {
 
     // NGƯỜI DÙNG VÀ PHÂN QUYỀN
     @GetMapping("/admin/users")
-    public String users(Model model) {
+    public String users(@RequestParam(required = false) String created, Model model) {
         model.addAttribute("users", userService.getAllUserResponses());
         model.addAttribute("roles", roleService.getAllRoles());
+        model.addAttribute("userCreated", created != null);
 
         return page(
                 model,
