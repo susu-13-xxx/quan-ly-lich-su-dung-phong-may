@@ -1,7 +1,8 @@
-
 package vn.edu.roomlab.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import vn.edu.roomlab.entity.User;
 import vn.edu.roomlab.dto.UserResponse;
 import vn.edu.roomlab.service.UserService;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;
