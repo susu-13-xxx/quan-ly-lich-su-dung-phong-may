@@ -32,7 +32,7 @@
                 <h2>Thông tin yêu cầu</h2>
                 <p>Vui lòng kiểm tra thông tin trước khi gửi.</p>
 
-                <form th:action="@{/bookings/create}" method="post"
+                <form id="bookingRequestForm" th:action="@{/bookings/create}" method="post"
                       style="margin-top: 25px;">
 
                     <!-- Chọn phòng -->
@@ -385,7 +385,7 @@ dateInput.addEventListener("change", loadAvailability);
 loadAvailability();
 
 // Không cho gửi khi chưa chọn tiết
-document.querySelector("form").addEventListener("submit", function(e) {
+document.getElementById("bookingRequestForm").addEventListener("submit", function(e) {
 
     if (!startInput.value || !endInput.value) {
         e.preventDefault();
