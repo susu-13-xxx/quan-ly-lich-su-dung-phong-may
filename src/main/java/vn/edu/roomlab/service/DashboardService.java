@@ -49,7 +49,7 @@ public class DashboardService {
         List<Booking> allBookings = bookingRepository.findAll();
         List<Incident> allIncidents = incidentRepository.findAll();
 
-        List<Booking> visibleBookings = admin ? allBookings
+        List<Booking> visibleBookings = (admin || technician) ? allBookings
                 : allBookings.stream()
                     .filter(b -> b.getUser() != null
                             && b.getUser().getUserId().equals(currentUser.getUserId()))
@@ -103,6 +103,7 @@ public class DashboardService {
         data.put("dashboardName", currentUser.getFullName());
         data.put("dashboardDate", today);
         data.put("isAdmin", admin);
+        data.put("isSystemView", admin || technician);
         data.put("isTechnician", technician);
         data.put("totalRooms", rooms.size());
         data.put("availableRooms", rooms.stream()
