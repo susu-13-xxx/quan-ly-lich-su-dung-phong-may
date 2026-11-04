@@ -21,13 +21,13 @@
         <article class="dashboard-kpi">
             <div class="dashboard-kpi-icon bookings-icon">▦</div>
             <div><span>LỊCH ĐẶT HÔM NAY</span><strong th:text="${todayBookings}">0</strong>
-                <small>Lịch đặt trong ngày của <span th:text="${isAdmin} ? 'toàn hệ thống' : 'tài khoản'">tài khoản</span></small></div>
+                <small>Lịch đặt trong ngày của <span th:text="${isSystemView} ? 'toàn hệ thống' : 'tài khoản'">tài khoản</span></small></div>
         </article>
         <article class="dashboard-kpi">
             <div class="dashboard-kpi-icon pending-icon">◷</div>
             <div><span th:text="${isAdmin} ? 'CHỜ DUYỆT' : 'LỊCH CHỜ XỬ LÝ'">CHỜ DUYỆT</span>
                 <strong th:text="${pendingBookings}">0</strong>
-                <small th:text="${isAdmin} ? 'Yêu cầu cần quản trị viên xem xét' : 'Yêu cầu đặt phòng của bạn'">Yêu cầu cần xử lý</small></div>
+                <small th:text="${isAdmin} ? 'Yêu cầu cần quản trị viên xem xét' : (${isSystemView} ? 'Yêu cầu chờ xử lý trong hệ thống' : 'Yêu cầu đặt phòng của bạn')">Yêu cầu cần xử lý</small></div>
         </article>
         <article class="dashboard-kpi">
             <div class="dashboard-kpi-icon incidents-icon">⚠</div>
