@@ -297,4 +297,11 @@ public class BookingService {
                 && endIndex >= startIndex;
     }
 
+
+    // Trả về lịch biểu đã lọc; tải sẵn phòng và người đặt để hiển thị trên trang.
+    @Transactional(readOnly = true)
+    public List<Booking> getTimetable(LocalDate bookingDate, Integer roomId, String status) {
+        String normalizedStatus = (status == null || status.isBlank()) ? null : status;
+        return bookingRepository.findForTimetable(bookingDate, roomId, normalizedStatus);
+    }
 }
