@@ -1,4 +1,4 @@
-<div th:fragment="content" class="dashboard-page">
+<div th:fragment="content" class="dashboard-page" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <section class="dashboard-welcome">
         <div>
@@ -71,7 +71,7 @@
                         <small><span th:text="${#temporals.format(booking.startTime, 'HH:mm')}">08:00</span> – <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}">09:00</span></small>
                     </div>
                     <span class="dashboard-status"
-                          th:classappend="${booking.status == 'APPROVED'} ? ' dashboard-status-approved' : ' dashboard-status-pending'"
+                          th:classappend="${booking.status == 'APPROVED' ? ' dashboard-status-approved' : ' dashboard-status-pending'}"
                           th:text="${booking.status == 'APPROVED'} ? 'Đã duyệt' : 'Chờ duyệt'">Chờ duyệt</span>
                 </div>
             </div>
@@ -88,14 +88,14 @@
             <div th:unless="${#lists.isEmpty(recentIncidents)}" class="dashboard-list">
                 <div class="dashboard-list-row incident-dashboard-row" th:each="incident : ${recentIncidents}">
                     <div class="incident-mini-icon"
-                         th:classappend="${incident.priority == 'HIGH'} ? ' incident-mini-high' : ''">⚠</div>
+                         th:classappend="${incident.priority == 'HIGH' ? ' incident-mini-high' : ''}">⚠</div>
                     <div class="dashboard-list-main">
                         <strong th:text="${incident.title}">Tên sự cố</strong>
                         <small><span th:text="${incident.roomName}">Phòng</span> · <span th:text="${#temporals.format(incident.reportedAt, 'dd/MM HH:mm')}">04/11 08:00</span></small>
                     </div>
                     <span class="dashboard-status"
-                          th:classappend="${incident.status == 'RESOLVED'} ? ' dashboard-status-approved' : ' dashboard-status-pending'"
-                          th:text="${incident.status == 'RESOLVED'} ? 'Đã xử lý' : (${incident.status == 'IN_PROGRESS'} ? 'Đang xử lý' : 'Mới')">Mới</span>
+                          th:classappend="${incident.status == 'RESOLVED' ? ' dashboard-status-approved' : ' dashboard-status-pending'}"
+                          th:switch="${incident.status}">Mới</span>
                 </div>
             </div>
         </section>
@@ -111,13 +111,13 @@
                 <thead><tr><th>MÃ LỊCH</th><th>PHÒNG</th><th>NGÀY SỬ DỤNG</th><th>THỜI GIAN</th><th>TRẠNG THÁI</th></tr></thead>
                 <tbody>
                     <tr th:each="booking : ${recentBookings}">
-                        <td th:text="'#' + ${booking.id}">#1</td>
+                        <td th:text="|#${booking.id}|">#1</td>
                         <td th:text="${booking.roomName}">Phòng máy</td>
                         <td th:text="${#temporals.format(booking.bookingDate, 'dd/MM/yyyy')}">04/11/2026</td>
                         <td><span th:text="${#temporals.format(booking.startTime, 'HH:mm')}">08:00</span> – <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}">09:00</span></td>
                         <td>
                             <span class="dashboard-status"
-                                  th:classappend="${booking.status == 'APPROVED'} ? ' dashboard-status-approved' : (${booking.status == 'PENDING'} ? ' dashboard-status-pending' : ' dashboard-status-neutral')"
+                                  th:classappend="${booking.status == 'APPROVED' ? ' dashboard-status-approved' : (booking.status == 'PENDING' ? ' dashboard-status-pending' : ' dashboard-status-neutral')}"
                                   th:text="${booking.status == 'APPROVED'} ? 'Đã duyệt' : (${booking.status == 'PENDING'} ? 'Chờ duyệt' : (${booking.status == 'REJECTED'} ? 'Từ chối' : 'Đã hủy'))">Chờ duyệt</span>
                         </td>
                     </tr>
@@ -131,7 +131,7 @@
     </section>
 
     <section class="dashboard-admin-note" sec:authorize="hasRole('ADMIN')">
-        <div><strong>Không gian quản trị</strong><small th:text="'Hiện có ' + ${totalUsers} + ' tài khoản trong hệ thống.'">Thông tin quản trị</small></div>
+        <div><strong>Không gian quản trị</strong><small th:text="|Hiện có ${totalUsers} tài khoản trong hệ thống.|">Thông tin quản trị</small></div>
         <a th:href="@{/admin/bookings}" class="btn btn-outline">Duyệt lịch đặt</a>
         <a th:href="@{/admin/reports}" class="btn btn-outline">Xem báo cáo hiệu suất</a>
     </section>
