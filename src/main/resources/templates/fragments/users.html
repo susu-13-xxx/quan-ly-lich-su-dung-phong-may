@@ -1,16 +1,19 @@
 <div th:fragment="content">
 
     <div class="card">
-        <h2>Danh sách người dùng</h2>
-        <p>Quản lý tài khoản và vai trò truy cập hệ thống.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+            <div>
+                <h2>Danh sách người dùng</h2>
+                <p>Quản lý tài khoản và vai trò truy cập hệ thống.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/admin/users/new}">＋ Thêm người dùng mới</a>
+        </div>
 
         <div th:if="${#lists.isEmpty(users)}">
             <p>Hiện chưa có người dùng nào.</p>
         </div>
 
-        <div th:unless="${#lists.isEmpty(users)}"
-             style="overflow-x: auto;">
-
+        <div th:unless="${#lists.isEmpty(users)}" style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
@@ -23,7 +26,6 @@
                         <th>Trạng thái</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr th:each="user : ${users}">
                         <td th:text="${user.userId}"></td>
@@ -36,7 +38,6 @@
                     </tr>
                 </tbody>
             </table>
-
         </div>
     </div>
 
