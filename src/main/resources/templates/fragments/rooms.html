@@ -1,0 +1,47 @@
+<div th:fragment="content">
+    <div class="card">
+        <div class="section-heading">
+            <div>
+                <h2>Danh sách phòng máy</h2>
+                <p>Thông tin các phòng hiện có trong hệ thống.</p>
+            </div>
+        </div>
+
+        <div class="table-responsive" th:if="${rooms != null and !rooms.isEmpty()}">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Mã phòng</th>
+                    <th>Tên phòng</th>
+                    <th>Vị trí</th>
+                    <th>Sức chứa</th>
+                    <th>Trạng thái</th>
+                    <th>Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="room : ${rooms}">
+                    <td th:text="${room.roomId}"></td>
+                    <td th:text="${room.roomName}"></td>
+                    <td th:text="${room.location}"></td>
+                    <td><span th:text="${room.capacity}"></span> chỗ</td>
+                    <td>
+                        <span class="status-badge"
+                              th:text="${room.status != null ? room.status : 'Chưa cập nhật'}">
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{/rooms/{id}(id=${room.roomId})}"
+                           class="btn btn-outline">Xem</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${rooms == null or rooms.isEmpty()}">
+            <h3>Chưa có phòng máy</h3>
+            <p>Hiện tại hệ thống chưa có phòng máy nào được ghi nhận.</p>
+        </div>
+    </div>
+</div>
