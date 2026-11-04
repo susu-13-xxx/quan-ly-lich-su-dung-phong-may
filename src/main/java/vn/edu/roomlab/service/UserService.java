@@ -6,6 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.roomlab.entity.User;
 import vn.edu.roomlab.dto.UserResponse;
 import vn.edu.roomlab.repository.UserRepository;
+import vn.edu.roomlab.repository.RoleRepository;
+import vn.edu.roomlab.entity.Role;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import java.time.LocalDateTime;
 
 import java.util.List;
 
@@ -14,9 +18,13 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Lấy danh sách người dùng dưới dạng DTO trong transaction,
@@ -41,6 +49,31 @@ public class UserService {
 
     // Thêm hoặc cập nhật người dùng
     public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    // Tạo tài khoản mới từ màn hình quản trị; mật khẩu luôn được mã hóa trước khi lưu.
+    public User createUser(String username, String rawPassword, String fullName,
+                           String email, String phone, Integer roleId) {
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
+        }
+        if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email đã được sử dụng.");
+        }
+
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new IllegalArgumentException("Vai trò không hợp lệ."));
+
+        User user = new User();
+        user.setUsername(username.trim());
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setFullName(fullName.trim());
+        user.setEmail(email == null || email.isBlank() ? null : email.trim());
+        user.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
+        user.setRole(role);
+        user.setStatus("ACTIVE");
+        user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 
