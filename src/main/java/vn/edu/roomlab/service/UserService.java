@@ -55,10 +55,13 @@ public class UserService {
     // Tạo tài khoản mới từ màn hình quản trị; mật khẩu luôn được mã hóa trước khi lưu.
     public User createUser(String username, String rawPassword, String fullName,
                            String email, String phone, Integer roleId) {
-        if (userRepository.existsByUsername(username)) {
+        String normalizedUsername = username.trim();
+        String normalizedEmail = email == null || email.isBlank() ? null : email.trim();
+
+        if (userRepository.existsByUsername(normalizedUsername)) {
             throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
         }
-        if (email != null && !email.isBlank() && userRepository.existsByEmail(email)) {
+        if (normalizedEmail != null && userRepository.existsByEmail(normalizedEmail)) {
             throw new IllegalArgumentException("Email đã được sử dụng.");
         }
 
@@ -66,10 +69,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Vai trò không hợp lệ."));
 
         User user = new User();
-        user.setUsername(username.trim());
+        user.setUsername(normalizedUsername);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setFullName(fullName.trim());
-        user.setEmail(email == null || email.isBlank() ? null : email.trim());
+        user.setEmail(normalizedEmail);
         user.setPhone(phone == null || phone.isBlank() ? null : phone.trim());
         user.setRole(role);
         user.setStatus("ACTIVE");
