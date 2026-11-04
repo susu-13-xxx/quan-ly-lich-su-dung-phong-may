@@ -9,6 +9,10 @@
             <a class="btn btn-primary" th:href="@{/admin/users/new}">＋ Thêm người dùng mới</a>
         </div>
 
+        <div th:if="${userCreated}" class="empty-panel" style="padding:14px; margin:16px 0; border-left:4px solid #16a34a;">
+            <strong style="color:#15803d;">Tạo tài khoản mới thành công!</strong>
+        </div>
+
         <div th:if="${#lists.isEmpty(users)}">
             <p>Hiện chưa có người dùng nào.</p>
         </div>
