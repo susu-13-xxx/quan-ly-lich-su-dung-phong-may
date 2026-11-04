@@ -1,6 +1,10 @@
 
 package vn.edu.roomlab.controller;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import vn.edu.roomlab.service.UserService;
 import vn.edu.roomlab.service.RoleService;
 import vn.edu.roomlab.service.IncidentService;
+import vn.edu.roomlab.service.BookingService;
+import vn.edu.roomlab.service.RoomService;
 
 @Controller
 public class PageController {
@@ -15,15 +21,21 @@ public class PageController {
     private final UserService userService;
     private final RoleService roleService;
     private final IncidentService incidentService;
+    private final BookingService bookingService;
+    private final RoomService roomService;
 
     public PageController(
             UserService userService,
             RoleService roleService,
-            IncidentService incidentService
+            IncidentService incidentService,
+            BookingService bookingService,
+            RoomService roomService
     ) {
         this.userService = userService;
         this.roleService = roleService;
         this.incidentService = incidentService;
+        this.bookingService = bookingService;
+        this.roomService = roomService;
     }
 
     private String page(
@@ -71,11 +83,23 @@ public class PageController {
 
     // LỊCH BIỂU
     @GetMapping("/timetable")
-    public String timetable(Model model) {
+    public String timetable(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) Integer roomId,
+            @RequestParam(required = false) String status,
+            Model model
+    ) {
+        model.addAttribute("bookings", bookingService.getTimetable(date, roomId, status));
+        model.addAttribute("rooms", roomService.getAllRooms());
+        model.addAttribute("selectedDate", date);
+        model.addAttribute("selectedRoomId", roomId);
+        model.addAttribute("selectedStatus", status);
+
         return page(
                 model,
                 "Lịch biểu tổng quan",
-                "Theo dõi lịch sử dụng các phòng máy theo ngày và khung giờ.",
+                "Theo dõi và lọc lịch sử dụng các phòng máy theo ngày, phòng và trạng thái.",
                 "timetable",
                 "fragments/timetable"
         );
