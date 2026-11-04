@@ -2,6 +2,7 @@ package vn.edu.roomlab.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class IncidentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'TECHNICIAN')")
     public IncidentResponse create(
             @RequestBody IncidentRequest request,
             Authentication authentication
@@ -41,6 +43,7 @@ public class IncidentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public IncidentResponse update(
             @PathVariable Integer id,
             @RequestBody IncidentRequest request
@@ -49,6 +52,7 @@ public class IncidentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Integer id) {
         incidentService.deleteIncident(id);
     }
