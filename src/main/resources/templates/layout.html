@@ -1,6 +1,7 @@
-
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -17,7 +18,6 @@
 
 <div class="app-shell">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
 
         <a class="brand" th:href="@{/dashboard}">
@@ -49,26 +49,30 @@
                 ◷ Lịch sử đặt phòng
             </a>
 
-            <div class="nav-caption admin-caption">
+            <div class="nav-caption admin-caption"
+                 sec:authorize="hasRole('ADMIN')">
                 QUẢN TRỊ
             </div>
 
             <a th:href="@{/admin/bookings}"
+               sec:authorize="hasRole('ADMIN')"
                th:classappend="${activePage == 'approvals'} ? ' active' : ''">
                 ✓ Duyệt lịch đặt
             </a>
 
             <a th:href="@{/rooms}"
                th:classappend="${activePage == 'rooms'} ? ' active' : ''">
-                ▣ Phòng máy & thiết bị
+                ▣ Danh sách phòng
             </a>
 
             <a th:href="@{/admin/users}"
+               sec:authorize="hasRole('ADMIN')"
                th:classappend="${activePage == 'users'} ? ' active' : ''">
                 ♙ Người dùng & phân quyền
             </a>
 
             <a th:href="@{/admin/reports}"
+               sec:authorize="hasRole('ADMIN')"
                th:classappend="${activePage == 'reports'} ? ' active' : ''">
                 ▤ Báo cáo hiệu suất
             </a>
@@ -78,7 +82,7 @@
                 ⚠ Sự cố / Báo hỏng
             </a>
 
-            <div class="nav-caption admin-caption">
+            <div class="nav-caption">
                 TÀI KHOẢN
             </div>
 
@@ -103,11 +107,8 @@
 
     </aside>
 
-
-    <!-- MAIN AREA -->
     <main class="main-area">
 
-        <!-- TOPBAR -->
         <header class="topbar">
 
             <div>
@@ -121,27 +122,23 @@
             </div>
 
             <div class="user-chip">
-
-                <span class="avatar">U</span>
-
+                <span class="avatar">RL</span>
                 <span>
-                    Người dùng demo
+                    <strong sec:authentication="name">Người dùng</strong>
                     <br>
-                    <small>Vai trò: Chưa đăng nhập</small>
+                    <small sec:authorize="hasRole('ADMIN')">Vai trò: Admin</small>
+                    <small sec:authorize="hasRole('TEACHER')">Vai trò: Teacher</small>
+                    <small sec:authorize="hasRole('TECHNICIAN')">Vai trò: Tech</small>
                 </span>
-
             </div>
 
         </header>
 
-
-        <!-- PAGE CONTENT -->
         <section class="content">
 
             <div class="page-heading">
 
                 <div>
-
                     <div class="eyebrow">
                         KHÔNG GIAN LÀM VIỆC
                     </div>
@@ -153,25 +150,18 @@
                     <p th:text="${pageDescription}">
                         Mô tả trang
                     </p>
-
                 </div>
 
-                <a class="btn btn-light"
-                   th:href="@{/dashboard}">
+                <a class="btn btn-light" th:href="@{/dashboard}">
                     ← Về tổng quan
                 </a>
 
             </div>
 
-
-            <!-- DYNAMIC CONTENT -->
-            <div th:replace="~{${content} :: content}">
-            </div>
+            <div th:replace="~{ ${content} :: content }"></div>
 
         </section>
 
-
-        <!-- FOOTER -->
         <footer>
             © 2026 RoomLab · Hệ thống quản lý lịch sử dụng phòng máy
         </footer>
