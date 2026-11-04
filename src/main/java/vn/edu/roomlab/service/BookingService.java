@@ -3,6 +3,8 @@ package vn.edu.roomlab.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import vn.edu.roomlab.entity.Booking;
 import vn.edu.roomlab.entity.Room;
@@ -298,10 +300,32 @@ public class BookingService {
     }
 
 
-    // Trả về lịch biểu đã lọc; tải sẵn phòng và người đặt để hiển thị trên trang.
+    // Chỉ thêm điều kiện khi người dùng thực sự chọn bộ lọc.
     @Transactional(readOnly = true)
     public List<Booking> getTimetable(LocalDate bookingDate, Integer roomId, String status) {
-        String normalizedStatus = (status == null || status.isBlank()) ? null : status;
-        return bookingRepository.findForTimetable(bookingDate, roomId, normalizedStatus);
+        Specification<Booking> specification = (root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+
+            if (bookingDate != null) {
+                predicates.add(criteriaBuilder.equal(root.get("bookingDate"), bookingDate));
+            }
+
+            if (roomId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.join("room").get("roomId"), roomId));
+            }
+
+            if (status != null && !status.isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status.trim()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(
+                    new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return bookingRepository.findAll(
+                specification,
+                Sort.by(Sort.Order.asc("bookingDate"), Sort.Order.asc("startTime"))
+        );
     }
 }
