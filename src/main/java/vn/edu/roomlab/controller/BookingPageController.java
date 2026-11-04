@@ -21,108 +21,67 @@ import vn.edu.roomlab.dto.BookingSlotResponse;
 @Controller
 @RequestMapping("/bookings")
 public class BookingPageController {
-    
+
     private final BookingService bookingService;
     private final RoomRepository roomRepository;
 
-    public BookingPageController(
-            BookingService bookingService,
-            RoomRepository roomRepository) {
+    public BookingPageController(BookingService bookingService, RoomRepository roomRepository) {
         this.bookingService = bookingService;
         this.roomRepository = roomRepository;
     }
-    // API lấy lịch đặt phòng theo ngày
+
     @GetMapping("/availability")
     @ResponseBody
     public List<BookingSlotResponse> getRoomSchedule(
             @RequestParam Integer roomId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate bookingDate) {
+        return bookingService.getRoomSchedule(roomId, bookingDate);
+    }
 
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate bookingDate) {
-
-        return bookingService.getRoomSchedule(
-            roomId,
-            bookingDate
-    );
-}
-    // Hiển thị biểu mẫu đặt phòng
     @GetMapping("/new")
     public String showBookingForm(
             @RequestParam(required = false) Integer roomId,
             Principal principal,
             Model model) {
-
         prepareForm(model, principal);
-
         model.addAttribute("selectedRoomId", roomId);
-
-        return "booking-form";
+        return "layout";
     }
 
-    // Xử lý gửi yêu cầu đặt phòng
     @PostMapping("/create")
     public String createBooking(
             @RequestParam Integer roomId,
-
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate bookingDate,
-
-            @RequestParam
-            @DateTimeFormat(pattern = "HH:mm")
-            LocalTime startTime,
-
-            @RequestParam
-            @DateTimeFormat(pattern = "HH:mm")
-            LocalTime endTime,
-
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate bookingDate,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime startTime,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime endTime,
             @RequestParam(required = false) String purpose,
-
             Principal principal,
             Model model) {
+        prepareForm(model, principal);
+        model.addAttribute("selectedRoomId", roomId);
+        model.addAttribute("bookingDate", bookingDate);
+        model.addAttribute("startTime", startTime);
+        model.addAttribute("endTime", endTime);
+        model.addAttribute("purpose", purpose);
 
         try {
             bookingService.createBooking(
-                    principal.getName(),
-                    roomId,
-                    bookingDate,
-                    startTime,
-                    endTime,
-                    purpose
-            );
-
-            prepareForm(model, principal);
-
-            model.addAttribute(
-                    "successMessage",
-                    "Tạo yêu cầu đặt phòng thành công! Vui lòng chờ duyệt."
-            );
-
+                    principal.getName(), roomId, bookingDate, startTime, endTime, purpose);
+            model.addAttribute("successMessage",
+                    "Tạo yêu cầu đặt phòng thành công! Vui lòng chờ duyệt.");
         } catch (RuntimeException e) {
-
-            prepareForm(model, principal);
-
             model.addAttribute("errorMessage", e.getMessage());
-
-            model.addAttribute("selectedRoomId", roomId);
-            model.addAttribute("bookingDate", bookingDate);
-            model.addAttribute("startTime", startTime);
-            model.addAttribute("endTime", endTime);
-            model.addAttribute("purpose", purpose);
         }
 
-        return "booking-form";
+        return "layout";
     }
 
-    // Chuẩn bị dữ liệu cho biểu mẫu
     private void prepareForm(Model model, Principal principal) {
-
         model.addAttribute("rooms", roomRepository.findAll());
-
-        model.addAttribute(
-                "username",
-                principal != null ? principal.getName() : "Người dùng"
-        );
+        model.addAttribute("username", principal != null ? principal.getName() : "Người dùng");
+        model.addAttribute("pageTitle", "Đặt phòng máy");
+        model.addAttribute("pageDescription", "Điền thông tin để gửi yêu cầu sử dụng phòng máy.");
+        model.addAttribute("activePage", "booking");
+        model.addAttribute("content", "fragments/booking-form");
     }
 }
