@@ -370,3 +370,11 @@ input,select,textarea{accent-color:#9b7c48}
   .card{padding:17px;border-radius:13px}
   .login-card{padding:30px 24px}
 }
+
+
+.brand-copy{display:flex;flex-direction:column;gap:3px}
+.brand-copy strong{font-size:20px;line-height:1;color:#fff;letter-spacing:-.6px}
+.brand-copy small{font-size:7px;letter-spacing:1.45px;color:#c6b48e;font-weight:800}
+.eyebrow{display:flex;align-items:center;gap:8px}
+.eyebrow-line{display:inline-block;width:20px;height:1px;background:var(--gold)}
+@media(max-width:650px){.brand-copy strong{font-size:18px}}
