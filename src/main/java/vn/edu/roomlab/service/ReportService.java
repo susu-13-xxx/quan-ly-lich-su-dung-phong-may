@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,10 +96,13 @@ public class ReportService {
 
         List<String> roomLabels = new ArrayList<>();
         List<Double> roomValues = new ArrayList<>();
-        roomNames.forEach((id, name) -> {
-            roomLabels.add(name);
-            roomValues.add(Math.round(roomHours.get(id) * 10.0) / 10.0);
-        });
+        roomNames.keySet().stream()
+                .sorted(Comparator.comparing(
+                        (Integer id) -> roomHours.get(id)).reversed())
+                .forEach(id -> {
+                    roomLabels.add(roomNames.get(id));
+                    roomValues.add(Math.round(roomHours.get(id) * 10.0) / 10.0);
+                });
 
         List<String> statusLabels = List.of(
                 "Chờ duyệt", "Đã duyệt", "Từ chối", "Đã hủy");
