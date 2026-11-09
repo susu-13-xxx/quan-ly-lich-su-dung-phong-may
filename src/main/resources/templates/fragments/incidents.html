@@ -31,6 +31,12 @@
                             th:attr="data-room-id=${equipment.roomId}"
                             th:text="${equipment.equipmentName + ' — ' + equipment.equipmentType}"></option>
                 </select>
+                <label style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+                    <input id="airConditioner" type="checkbox"
+                           name="equipmentType" value="AIR_CONDITIONER">
+                    Báo hỏng điều hòa của phòng đã chọn
+                </label>
+                <small>Hệ thống sẽ tự ghi nhận điều hòa vào danh sách thiết bị của phòng khi gửi báo cáo.</small>
             </div>
 
             <div class="form-group incident-form-wide">
@@ -137,7 +143,8 @@
         (() => {
             const roomSelect = document.getElementById('roomId');
             const equipmentSelect = document.getElementById('equipmentId');
-            if (!roomSelect || !equipmentSelect) return;
+            const airConditioner = document.getElementById('airConditioner');
+            if (!roomSelect || !equipmentSelect || !airConditioner) return;
 
             const filterEquipment = () => {
                 const roomId = roomSelect.value;
@@ -147,9 +154,12 @@
                     option.hidden = !matches;
                     if (!matches && option.selected) equipmentSelect.value = '';
                 });
+                equipmentSelect.disabled = airConditioner.checked;
+                if (airConditioner.checked) equipmentSelect.value = '';
             };
 
             roomSelect.addEventListener('change', filterEquipment);
+            airConditioner.addEventListener('change', filterEquipment);
             filterEquipment();
         })();
     </script>
