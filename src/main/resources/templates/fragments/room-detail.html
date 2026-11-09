@@ -39,7 +39,6 @@
                 <tr>
                     <th>Tên thiết bị</th>
                     <th>Loại thiết bị</th>
-                    <th>Số lượng</th>
                     <th>Mô tả</th>
                 </tr>
                 </thead>
@@ -47,7 +46,6 @@
                 <tr th:each="equipment : ${brokenEquipments}">
                     <td th:text="${equipment.equipmentName}"></td>
                     <td th:text="${equipment.equipmentType}"></td>
-                    <td th:text="${equipment.quantity}"></td>
                     <td th:text="${equipment.description != null and !equipment.description.isBlank() ? equipment.description : 'Chưa có mô tả'}"></td>
                 </tr>
                 </tbody>
