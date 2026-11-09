@@ -12,6 +12,8 @@
         <div th:if="${userCreated}" class="empty-panel" style="padding:14px; margin:16px 0; border-left:4px solid #16a34a;">
             <strong style="color:#15803d;">Tạo tài khoản mới thành công!</strong>
         </div>
+        <div th:if="${userStatusSuccess}" class="alert alert-success" th:text="${userStatusSuccess}"></div>
+        <div th:if="${userStatusError}" class="alert alert-error" th:text="${userStatusError}"></div>
 
         <div th:if="${#lists.isEmpty(users)}">
             <p>Hiện chưa có người dùng nào.</p>
@@ -28,6 +30,7 @@
                         <th>Số điện thoại</th>
                         <th>Vai trò</th>
                         <th>Trạng thái</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,7 +41,23 @@
                         <td th:text="${user.email}"></td>
                         <td th:text="${user.phone}"></td>
                         <td th:text="${user.roleName}"></td>
-                        <td th:text="${user.status}"></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:text="${user.status == 'ACTIVE' ? 'Đang hoạt động' : 'Đã khóa'}"></span>
+                        </td>
+                        <td>
+                            <form th:if="${user.roleName == 'TEACHER' or user.roleName == 'TECHNICIAN'}"
+                                  method="post"
+                                  th:action="@{/admin/users/{id}/status(id=${user.userId})}"
+                                  style="display:flex; gap:8px; align-items:center;">
+                                <select name="status" aria-label="Trạng thái tài khoản">
+                                    <option value="ACTIVE" th:selected="${user.status == 'ACTIVE'}">Mở khóa</option>
+                                    <option value="INACTIVE" th:selected="${user.status == 'INACTIVE'}">Khóa tài khoản</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline btn-small">Lưu</button>
+                            </form>
+                            <span th:if="${user.roleName != 'TEACHER' and user.roleName != 'TECHNICIAN'}">—</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
