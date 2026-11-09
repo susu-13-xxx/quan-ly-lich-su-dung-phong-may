@@ -1,4 +1,3 @@
-
 package vn.edu.roomlab.service;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +33,22 @@ public class EquipmentService {
     // Lấy danh sách thiết bị
     public List<EquipmentResponse> getAllEquipments() {
         return equipmentRepository.findAll()
+                .stream()
+                .map(EquipmentResponse::from)
+                .toList();
+    }
+
+    // Lấy thiết bị đang hỏng của tất cả phòng
+    public List<EquipmentResponse> getAllBrokenEquipments() {
+        return equipmentRepository.findByStatus("BROKEN")
+                .stream()
+                .map(EquipmentResponse::from)
+                .toList();
+    }
+
+    // Lấy thiết bị đang hỏng của một phòng
+    public List<EquipmentResponse> getBrokenEquipmentsByRoomId(Integer roomId) {
+        return equipmentRepository.findByRoom_RoomIdAndStatus(roomId, "BROKEN")
                 .stream()
                 .map(EquipmentResponse::from)
                 .toList();
