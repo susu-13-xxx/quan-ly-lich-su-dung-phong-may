@@ -22,4 +22,36 @@
             </p>
         </div>
     </div>
+
+    <div class="card" th:if="${brokenEquipments != null and !brokenEquipments.isEmpty()}">
+        <div class="section-heading">
+            <div>
+                <h2>Thiết bị đang hỏng</h2>
+                <p>Các thiết bị cần được kiểm tra hoặc sửa chữa tại phòng này.</p>
+            </div>
+            <span class="status-badge status-danger"
+                  th:text="${brokenEquipments.size()} + ' thiết bị'"></span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Tên thiết bị</th>
+                    <th>Loại thiết bị</th>
+                    <th>Số lượng</th>
+                    <th>Mô tả</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="equipment : ${brokenEquipments}">
+                    <td th:text="${equipment.equipmentName}"></td>
+                    <td th:text="${equipment.equipmentType}"></td>
+                    <td th:text="${equipment.quantity}"></td>
+                    <td th:text="${equipment.description != null and !equipment.description.isBlank() ? equipment.description : 'Chưa có mô tả'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
