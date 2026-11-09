@@ -1,11 +1,16 @@
 package vn.edu.roomlab.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import vn.edu.roomlab.dto.EquipmentResponse;
+import vn.edu.roomlab.entity.Room;
 import vn.edu.roomlab.service.EquipmentService;
 import vn.edu.roomlab.service.RoomService;
 
@@ -62,5 +67,43 @@ public class RoomPageController {
         model.addAttribute("content", "fragments/room-detail");
 
         return "layout";
+    }
+
+    @PostMapping("/admin/rooms")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String createRoom(
+            @RequestParam String roomName,
+            @RequestParam(required = false) String location,
+            @RequestParam Integer capacity,
+            @RequestParam(required = false) String description,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Room room = new Room();
+            room.setRoomName(roomName);
+            room.setLocation(location);
+            room.setCapacity(capacity);
+            room.setDescription(description);
+            room.setStatus("AVAILABLE");
+            roomService.saveRoom(room);
+            redirectAttributes.addFlashAttribute("roomSuccess", "Đã thêm phòng máy mới.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("roomError", ex.getMessage());
+        }
+        return "redirect:/rooms";
+    }
+
+    @PostMapping("/admin/rooms/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateRoomStatus(
+            @PathVariable Integer id,
+            @RequestParam String status,
+            RedirectAttributes redirectAttributes) {
+        try {
+            roomService.updateRoomStatus(id, status);
+            redirectAttributes.addFlashAttribute("roomSuccess", "Đã cập nhật trạng thái phòng.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("roomError", ex.getMessage());
+        }
+        return "redirect:/rooms";
     }
 }
