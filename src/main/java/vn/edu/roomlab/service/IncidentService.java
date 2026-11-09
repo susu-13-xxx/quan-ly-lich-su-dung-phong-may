@@ -68,8 +68,18 @@ public class IncidentService {
                 .orElseThrow(() ->
                         new RuntimeException("Không tìm thấy phòng máy"));
 
-        Equipment equipment = findEquipment(request.equipmentId());
+        if (request.equipmentType() != null
+                && !"AIR_CONDITIONER".equals(request.equipmentType())) {
+            throw new IllegalArgumentException("Loại thiết bị báo hỏng không hợp lệ");
+        }
+        if (request.equipmentType() != null && request.equipmentId() != null) {
+            throw new IllegalArgumentException(
+                    "Chỉ chọn thiết bị thường hoặc điều hòa, không chọn đồng thời");
+        }
 
+        Equipment equipment = request.equipmentType() != null
+                ? findOrCreateBrokenAirConditioner(room)
+                : findEquipment(request.equipmentId());
 
         if (equipment != null
                 && !equipment.getRoom().getRoomId().equals(room.getRoomId())) {
@@ -92,6 +102,26 @@ public class IncidentService {
         return IncidentResponse.from(
                 incidentRepository.save(incident)
         );
+    }
+
+    // Tạo hồ sơ điều hòa nếu phòng chưa có; nếu đã có thì đánh dấu đang hỏng.
+    private Equipment findOrCreateBrokenAirConditioner(Room room) {
+        Equipment equipment = equipmentRepository
+                .findFirstByRoom_RoomIdAndEquipmentType(
+                        room.getRoomId(), "AIR_CONDITIONER")
+                .orElseGet(() -> {
+                    Equipment created = new Equipment();
+                    created.setEquipmentName("Điều hòa");
+                    created.setEquipmentType("AIR_CONDITIONER");
+                    created.setRoom(room);
+                    created.setQuantity(1);
+                    created.setDescription("Thiết bị điều hòa không khí của phòng.");
+                    created.setCreatedAt(LocalDateTime.now());
+                    return created;
+                });
+
+        equipment.setStatus("BROKEN");
+        return equipmentRepository.save(equipment);
     }
 
     // Cập nhật thông tin và trạng thái sự cố
