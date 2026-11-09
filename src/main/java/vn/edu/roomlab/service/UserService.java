@@ -125,6 +125,25 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Chỉ cho phép quản trị viên khóa/mở khóa tài khoản Teacher và Technician.
+    public void updateUserStatus(Integer id, String status) {
+        if (status == null || !List.of("ACTIVE", "INACTIVE").contains(status)) {
+            throw new IllegalArgumentException("Trạng thái tài khoản không hợp lệ.");
+        }
+
+        User user = getUserById(id);
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "";
+
+        if (!"TEACHER".equalsIgnoreCase(roleName)
+                && !"TECHNICIAN".equalsIgnoreCase(roleName)) {
+            throw new IllegalArgumentException(
+                    "Chỉ được thay đổi trạng thái tài khoản Teacher và Technician.");
+        }
+
+        user.setStatus(status);
+        userRepository.save(user);
+    }
+
     // Xóa người dùng
     public void deleteUser(Integer id) {
         User user = getUserById(id);
