@@ -89,6 +89,11 @@ public class IncidentService {
 
         Incident incident = new Incident();
 
+        if (equipment != null) {
+            equipment.setStatus("BROKEN");
+            equipmentRepository.save(equipment);
+        }
+
         incident.setUser(user);
         incident.setRoom(room);
         incident.setEquipment(equipment);
@@ -188,11 +193,30 @@ public class IncidentService {
         }
 
         incidentRepository.save(incident);
+        syncEquipmentStatus(incident.getEquipment());
+    }
+
+    private void syncEquipmentStatus(Equipment equipment) {
+        if (equipment == null) {
+            return;
+        }
+
+        boolean hasActiveIncident = incidentRepository.findByStatusIn(
+                List.of("OPEN", "IN_PROGRESS")
+        ).stream().anyMatch(item ->
+                item.getEquipment() != null
+                        && item.getEquipment().getEquipmentId()
+                                .equals(equipment.getEquipmentId()));
+
+        equipment.setStatus(hasActiveIncident ? "BROKEN" : "WORKING");
+        equipmentRepository.save(equipment);
     }
 
     public void deleteIncident(Integer id) {
         Incident incident = findIncident(id);
+        Equipment equipment = incident.getEquipment();
         incidentRepository.delete(incident);
+        syncEquipmentStatus(equipment);
     }
 
     private Incident findIncident(Integer id) {
