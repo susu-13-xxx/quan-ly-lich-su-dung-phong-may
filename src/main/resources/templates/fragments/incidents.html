@@ -26,17 +26,12 @@
                 <label for="equipmentId">Thiết bị liên quan</label>
                 <select id="equipmentId" name="equipmentId">
                     <option value="">Sự cố chung của phòng / Không xác định</option>
+                    <option value="AIR_CONDITIONER">Điều hòa</option>
                     <option th:each="equipment : ${equipments}"
                             th:value="${equipment.equipmentId}"
                             th:attr="data-room-id=${equipment.roomId}"
                             th:text="${equipment.equipmentName + ' — ' + equipment.equipmentType}"></option>
                 </select>
-                <label style="display:flex; align-items:center; gap:8px; margin-top:10px;">
-                    <input id="airConditioner" type="checkbox"
-                           name="equipmentType" value="AIR_CONDITIONER">
-                    Báo hỏng điều hòa của phòng đã chọn
-                </label>
-                <small>Hệ thống sẽ tự ghi nhận điều hòa vào danh sách thiết bị của phòng khi gửi báo cáo.</small>
             </div>
 
             <div class="form-group incident-form-wide">
@@ -143,23 +138,19 @@
         (() => {
             const roomSelect = document.getElementById('roomId');
             const equipmentSelect = document.getElementById('equipmentId');
-            const airConditioner = document.getElementById('airConditioner');
-            if (!roomSelect || !equipmentSelect || !airConditioner) return;
+            if (!roomSelect || !equipmentSelect) return;
 
             const filterEquipment = () => {
                 const roomId = roomSelect.value;
                 Array.from(equipmentSelect.options).forEach((option, index) => {
-                    if (index === 0) return;
+                    if (index === 0 || option.value === 'AIR_CONDITIONER') return;
                     const matches = !roomId || option.dataset.roomId === roomId;
                     option.hidden = !matches;
                     if (!matches && option.selected) equipmentSelect.value = '';
                 });
-                equipmentSelect.disabled = airConditioner.checked;
-                if (airConditioner.checked) equipmentSelect.value = '';
             };
 
             roomSelect.addEventListener('change', filterEquipment);
-            airConditioner.addEventListener('change', filterEquipment);
             filterEquipment();
         })();
     </script>
