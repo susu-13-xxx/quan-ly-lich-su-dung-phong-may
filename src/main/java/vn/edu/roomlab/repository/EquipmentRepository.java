@@ -12,6 +12,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
 
     List<Equipment> findByRoom_RoomIdAndStatus(Integer roomId, String status);
 
-    Optional<Equipment> findFirstByRoom_RoomIdAndEquipmentType(
-            Integer roomId, String equipmentType);
+    Optional<Equipment> findFirstByRoom_RoomIdAndEquipmentNameIgnoreCase(
+            Integer roomId, String equipmentName);
 }
