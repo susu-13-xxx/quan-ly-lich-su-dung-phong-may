@@ -156,6 +156,23 @@ public class PageController {
         );
     }
 
+    @PostMapping("/admin/users/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateUserStatus(
+            @PathVariable Integer id,
+            @RequestParam String status,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            userService.updateUserStatus(id, status);
+            redirectAttributes.addFlashAttribute(
+                    "userStatusSuccess", "Đã cập nhật trạng thái tài khoản.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("userStatusError", ex.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
     // BÁO CÁO HIỆU SUẤT
     @GetMapping("/admin/reports")
     public String reports(
