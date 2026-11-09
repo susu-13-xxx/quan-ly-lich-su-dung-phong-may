@@ -226,6 +226,7 @@ public class PageController {
     public String reportIncident(
             @RequestParam Integer roomId,
             @RequestParam(required = false) Integer equipmentId,
+            @RequestParam(required = false) String equipmentType,
             @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam String priority,
@@ -235,7 +236,7 @@ public class PageController {
         try {
             incidentService.createIncident(
                     new IncidentRequest(roomId, equipmentId, title,
-                            description, priority, null),
+                            description, priority, null, equipmentType),
                     authentication.getName()
             );
             redirectAttributes.addFlashAttribute(
