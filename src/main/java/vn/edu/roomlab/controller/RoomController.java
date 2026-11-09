@@ -29,13 +29,13 @@ public class RoomController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Room create(@RequestBody Room room) {
         return roomService.saveRoom(room);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Room update(@PathVariable Integer id,
                        @RequestBody Room room) {
         room.setRoomId(id);
