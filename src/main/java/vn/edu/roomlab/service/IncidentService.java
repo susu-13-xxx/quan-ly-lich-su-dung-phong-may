@@ -95,6 +95,7 @@ public class IncidentService {
         }
 
         incident.setUser(user);
+        Equipment previousEquipment = incident.getEquipment();
         incident.setRoom(room);
         incident.setEquipment(equipment);
         incident.setTitle(request.title().trim());
@@ -170,9 +171,11 @@ public class IncidentService {
             incident.setResolvedAt(null);
         }
 
-        return IncidentResponse.from(
-                incidentRepository.save(incident)
-        );
+        Incident saved = incidentRepository.save(incident);
+        syncEquipmentStatus(previousEquipment);
+        syncEquipmentStatus(equipment);
+
+        return IncidentResponse.from(saved);
     }
 
     // Chỉ cập nhật trạng thái, không cho phép sửa nội dung báo cáo gốc.
