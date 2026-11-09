@@ -16,6 +16,7 @@
                     <th>Vị trí</th>
                     <th>Sức chứa</th>
                     <th>Trạng thái</th>
+                    <th>Thiết bị hỏng</th>
                     <th>Chi tiết</th>
                 </tr>
                 </thead>
@@ -29,6 +30,13 @@
                         <span class="status-badge"
                               th:text="${room.status != null ? room.status : 'Chưa cập nhật'}">
                         </span>
+                    </td>
+                    <td>
+                        <span th:if="${brokenEquipmentsByRoom[room.roomId] != null}"
+                              class="status-badge status-danger"
+                              th:text="${brokenEquipmentsByRoom[room.roomId].size()} + ' thiết bị hỏng'">
+                        </span>
+                        <span th:unless="${brokenEquipmentsByRoom[room.roomId] != null}">—</span>
                     </td>
                     <td>
                         <a th:href="@{/rooms/{id}(id=${room.roomId})}"
