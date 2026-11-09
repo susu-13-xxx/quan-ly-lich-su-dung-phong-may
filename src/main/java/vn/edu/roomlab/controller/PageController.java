@@ -225,8 +225,7 @@ public class PageController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'TECHNICIAN')")
     public String reportIncident(
             @RequestParam Integer roomId,
-            @RequestParam(required = false) Integer equipmentId,
-            @RequestParam(required = false) String equipmentType,
+            @RequestParam(required = false) String equipmentId,
             @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam String priority,
@@ -234,9 +233,14 @@ public class PageController {
             RedirectAttributes redirectAttributes
     ) {
         try {
+            boolean airConditionerSelected = "AIR_CONDITIONER".equals(equipmentId);
+            Integer selectedEquipmentId = equipmentId == null || equipmentId.isBlank()
+                    || airConditionerSelected ? null : Integer.valueOf(equipmentId);
+
             incidentService.createIncident(
-                    new IncidentRequest(roomId, equipmentId, title,
-                            description, priority, null, equipmentType),
+                    new IncidentRequest(roomId, selectedEquipmentId, title,
+                            description, priority, null,
+                            airConditionerSelected ? "AIR_CONDITIONER" : null),
                     authentication.getName()
             );
             redirectAttributes.addFlashAttribute(
