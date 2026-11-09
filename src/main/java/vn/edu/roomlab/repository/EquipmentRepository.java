@@ -4,10 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import vn.edu.roomlab.entity.Equipment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
 
     List<Equipment> findByStatus(String status);
 
     List<Equipment> findByRoom_RoomIdAndStatus(Integer roomId, String status);
+
+    Optional<Equipment> findFirstByRoom_RoomIdAndEquipmentType(
+            Integer roomId, String equipmentType);
 }
