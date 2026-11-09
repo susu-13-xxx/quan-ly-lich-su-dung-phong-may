@@ -107,8 +107,8 @@ public class IncidentService {
     // Tạo hồ sơ điều hòa nếu phòng chưa có; nếu đã có thì đánh dấu đang hỏng.
     private Equipment findOrCreateBrokenAirConditioner(Room room) {
         Equipment equipment = equipmentRepository
-                .findFirstByRoom_RoomIdAndEquipmentType(
-                        room.getRoomId(), "AIR_CONDITIONER")
+                .findFirstByRoom_RoomIdAndEquipmentNameIgnoreCase(
+                        room.getRoomId(), "Điều hòa")
                 .orElseGet(() -> {
                     Equipment created = new Equipment();
                     created.setEquipmentName("Điều hòa");
