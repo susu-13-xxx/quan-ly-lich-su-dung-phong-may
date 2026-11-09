@@ -1,4 +1,37 @@
-<div th:fragment="content">
+<div th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div th:if="${roomSuccess}" class="alert alert-success" th:text="${roomSuccess}"></div>
+    <div th:if="${roomError}" class="alert alert-error" th:text="${roomError}"></div>
+
+    <div class="card" sec:authorize="hasRole('ADMIN')">
+        <div class="section-heading">
+            <div>
+                <h2>Thêm phòng máy</h2>
+                <p>Chỉ quản trị viên mới có thể tạo phòng mới.</p>
+            </div>
+        </div>
+        <form method="post" th:action="@{/admin/rooms}" class="incident-form">
+            <div class="form-group">
+                <label for="roomName">Tên phòng <span class="required">*</span></label>
+                <input id="roomName" name="roomName" type="text" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Vị trí</label>
+                <input id="location" name="location" type="text" maxlength="255">
+            </div>
+            <div class="form-group">
+                <label for="capacity">Sức chứa <span class="required">*</span></label>
+                <input id="capacity" name="capacity" type="number" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Mô tả</label>
+                <input id="description" name="description" type="text">
+            </div>
+            <div class="incident-form-actions">
+                <button type="submit" class="btn btn-primary">＋ Thêm phòng</button>
+            </div>
+        </form>
+    </div>
+
     <div class="card">
         <div class="section-heading">
             <div>
@@ -27,15 +60,24 @@
                     <td th:text="${room.location}"></td>
                     <td><span th:text="${room.capacity}"></span> chỗ</td>
                     <td>
-                        <span class="status-badge"
-                              th:text="${room.status != null ? room.status : 'Chưa cập nhật'}">
-                        </span>
+                        <form sec:authorize="hasRole('ADMIN')"
+                              method="post"
+                              th:action="@{/admin/rooms/{id}/status(id=${room.roomId})}"
+                              style="display:flex; gap:8px; align-items:center;">
+                            <select name="status" aria-label="Trạng thái phòng">
+                                <option value="AVAILABLE" th:selected="${room.status == 'AVAILABLE'}">Đang hoạt động</option>
+                                <option value="MAINTENANCE" th:selected="${room.status == 'MAINTENANCE'}">Đang bảo trì</option>
+                            </select>
+                            <button type="submit" class="btn btn-outline btn-small">Lưu</button>
+                        </form>
+                        <span sec:authorize="!hasRole('ADMIN')"
+                              class="status-badge"
+                              th:text="${room.status == 'AVAILABLE' ? 'Đang hoạt động' : (room.status == 'MAINTENANCE' ? 'Đang bảo trì' : 'Chưa cập nhật')}"></span>
                     </td>
                     <td>
                         <span th:if="${brokenEquipmentsByRoom[room.roomId] != null}"
                               class="status-badge status-danger"
-                              th:text="${brokenEquipmentsByRoom[room.roomId].size()} + ' thiết bị hỏng'">
-                        </span>
+                              th:text="${brokenEquipmentsByRoom[room.roomId].size()} + ' thiết bị hỏng'"></span>
                         <span th:unless="${brokenEquipmentsByRoom[room.roomId] != null}">—</span>
                     </td>
                     <td>
